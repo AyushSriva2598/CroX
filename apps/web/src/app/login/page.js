@@ -133,7 +133,7 @@ export default function LoginPage() {
               position: 'relative',
             }}
           >
-            <img src="/crox-logo.png" alt="CroX Logo" style={{ width: '70%', height: '70%', objectFit: 'contain' }} />
+            <img src="/crox-logo.jpg" alt="CroX Logo" style={{ width: '70%', height: '70%', objectFit: 'contain' }} />
           </motion.div>
           <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.02em' }}>
             Welcome to <span className="gradient-text">CroX</span>

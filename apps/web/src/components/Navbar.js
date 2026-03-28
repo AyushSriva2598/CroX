@@ -59,7 +59,7 @@ export default function Navbar() {
               boxShadow: '0 4px 20px rgba(131, 110, 249, 0.4)'
             }}
           >
-            <img src="/crox-logo.png" alt="CroX Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <img src="/crox-logo.jpg" alt="CroX Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </motion.div>
           <span style={{ fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>CroX</span>
         </Link>

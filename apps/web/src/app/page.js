@@ -97,7 +97,7 @@ export default function HomePage() {
               position: 'relative',
             }}
           >
-            <img src="/crox-logo.png" alt="CroX Logo" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
+            <img src="/crox-logo.jpg" alt="CroX Logo" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
             {/* Glow ring */}
             <motion.div
               animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}
