@@ -98,24 +98,27 @@ export default function DashboardPage() {
           marginBottom: 48,
         }}>
           {[
-            { label: 'My Contracts', value: stats.total, color: 'var(--text-primary)' },
-            { label: 'Active', value: stats.active, color: 'var(--accent-secondary)' },
-            { label: 'Available Work', value: stats.available, color: 'var(--accent-success)' },
-            { label: 'Total Value', value: `MON ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`, color: 'var(--accent-primary)' },
+            { label: 'My Contracts', value: stats.total, color: 'var(--accent-primary)', icon: '📁' },
+            { label: 'Active', value: stats.active, color: 'var(--accent-secondary)', icon: '⚡' },
+            { label: 'Available Work', value: stats.available, color: 'var(--accent-success)', icon: '🎯' },
+            { label: 'Total Value', value: `MON ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`, color: 'var(--accent-amber)', icon: '💰' },
           ].map((s, i) => (
             <motion.div 
               key={i} 
-              whileHover={{ y: -5 }}
+              whileHover={{ y: -8, scale: 1.02 }}
               className="glass-card" 
               style={{ padding: '28px 24px', position: 'relative', overflow: 'hidden' }}
             >
               <div style={{
-                position: 'absolute', top: 0, right: 0, width: 100, height: 100,
-                background: `radial-gradient(circle, ${s.color}20 0%, transparent 70%)`,
+                position: 'absolute', top: 0, right: 0, width: 120, height: 120,
+                background: `radial-gradient(circle, ${s.color}25 0%, transparent 70%)`,
                 transform: 'translate(30%, -30%)'
               }} />
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>{s.label}</p>
-              <p className="font-mono" style={{ fontSize: 32, fontWeight: 700, color: s.color }}>{s.value}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>{s.label}</p>
+                <span style={{ fontSize: 24 }}>{s.icon}</span>
+              </div>
+              <p className="font-mono" style={{ fontSize: 32, fontWeight: 800, color: s.color, letterSpacing: '-1px' }}>{s.value}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -186,37 +189,56 @@ export default function DashboardPage() {
                 <motion.div
                   key={contract.id}
                   variants={itemVariants}
-                  whileHover={{ scale: 1.01, x: 5 }}
+                  whileHover={{ 
+                    scale: 1.01, 
+                    x: 5,
+                    boxShadow: `0 10px 40px ${
+                      contract.state === 'completed' ? 'rgba(16, 185, 129, 0.15)' :
+                      contract.state === 'disputed' ? 'rgba(255, 82, 82, 0.15)' :
+                      'rgba(131, 110, 249, 0.15)'
+                    }`
+                  }}
                   className="glass-card"
-                  style={{ padding: '28px 32px', cursor: 'pointer', position: 'relative', overflow: 'hidden' }}
+                  style={{ 
+                    padding: '28px 32px', 
+                    cursor: 'pointer', 
+                    position: 'relative', 
+                    overflow: 'hidden',
+                    borderLeft: `4px solid ${
+                      contract.state === 'completed' ? 'var(--accent-success)' :
+                      contract.state === 'disputed' ? 'var(--accent-warning)' :
+                      'transparent'
+                    }`
+                  }}
                   onClick={() => router.push(`/contracts/${contract.id}`)}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-                        <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.01em' }}>{contract.title}</h3>
+                        <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em' }}>{contract.title}</h3>
                         <StateBadge state={contract.state} />
                         {contract.blockchain_verified && (
                           <span className="font-mono" style={{
-                            fontSize: 11,
-                            background: 'rgba(16, 185, 129, 0.15)',
+                            fontSize: 10,
+                            background: 'rgba(16, 185, 129, 0.1)',
                             color: 'var(--accent-success)',
                             padding: '4px 10px',
                             borderRadius: 9999,
-                            fontWeight: 700,
-                            letterSpacing: '0.5px'
+                            fontWeight: 800,
+                            letterSpacing: '1px'
                           }}>● ON-CHAIN</span>
                         )}
                       </div>
-                      <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                        {contract.description?.length > 120 ? contract.description.slice(0, 120) + '...' : (contract.description || 'No description provided')}
+                      <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: '90%' }}>
+                        {contract.description?.length > 140 ? contract.description.slice(0, 140) + '...' : (contract.description || 'No description provided')}
                       </p>
                     </div>
                     <div style={{ textAlign: 'right', paddingLeft: 24 }}>
-                      <p className="font-mono gradient-text" style={{ fontSize: 28, fontWeight: 800 }}>
-                        {parseFloat(contract.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} MON
+                      <p className="font-mono gradient-text" style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-1px' }}>
+                        {parseFloat(contract.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                        <span style={{ fontSize: 14, marginLeft: 4, opacity: 0.8 }}>MON</span>
                       </p>
-                      <p className="font-mono" style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 8 }}>
+                      <p className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         {new Date(contract.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                       </p>
                     </div>
