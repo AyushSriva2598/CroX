@@ -1,4 +1,4 @@
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import Providers from '@/components/Providers';
 import "./globals.css";
 
 export const metadata = {
@@ -15,9 +15,9 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'dummy-client-id'}>
+        <Providers>
           {children}
-        </GoogleOAuthProvider>
+        </Providers>
       </body>
     </html>
   );
