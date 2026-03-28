@@ -12,7 +12,7 @@ class ContractSerializer(serializers.ModelSerializer):
         model = Contract
         fields = [
             'id', 'payer', 'payee', 'payer_detail', 'payee_detail',
-            'payee_phone', 'worker_wallet', 'title', 'description', 'total_amount',
+            'payee_email', 'worker_wallet', 'title', 'description', 'total_amount',
             'state', 'terms', 'risk_score', 'risk_flags',
             'blockchain_tx_hash', 'blockchain_verified',
             'available_actions', 'created_at', 'updated_at',
@@ -31,7 +31,7 @@ class CreateContractSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=500)
     description = serializers.CharField(required=False, default='')
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
-    payee_phone = serializers.CharField(max_length=15, required=False, default='')
+    payee_email = serializers.EmailField(required=False, default='')
     worker_wallet = serializers.CharField(max_length=42, required=False, default='')
     terms = serializers.JSONField(required=False, default=dict)
     risk_score = serializers.FloatField(required=False, default=0.0)

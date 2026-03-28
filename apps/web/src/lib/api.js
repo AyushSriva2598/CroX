@@ -36,11 +36,11 @@ async function request(endpoint, options = {}) {
 }
 
 // Auth
-export const sendOTP = (phone_number, full_name = '') =>
-  request('/auth/send-otp/', { method: 'POST', body: JSON.stringify({ phone_number, full_name }) });
+export const sendOTP = (email, full_name = '') =>
+  request('/auth/send-otp/', { method: 'POST', body: JSON.stringify({ email, full_name }) });
 
-export const verifyOTP = (phone_number, otp_code) =>
-  request('/auth/verify-otp/', { method: 'POST', body: JSON.stringify({ phone_number, otp_code }) });
+export const verifyOTP = (email, otp_code) =>
+  request('/auth/verify-otp/', { method: 'POST', body: JSON.stringify({ email, otp_code }) });
 
 export const getProfile = () => request('/auth/profile/');
 

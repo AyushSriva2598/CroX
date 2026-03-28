@@ -26,13 +26,15 @@ export default function HomePage() {
       <div style={{
         width: 72, height: 72, borderRadius: 20,
         background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontWeight: 800, fontSize: 28, color: 'white', marginBottom: 24,
-        boxShadow: '0 12px 40px rgba(108, 99, 255, 0.3)',
-      }}>TL</div>
+        display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 0 24px 0',
+        fontWeight: 800, fontSize: 13, background: 'rgba(124, 255, 224, 0.1)', color: 'var(--neon-mint)',
+        border: '1px solid rgba(124, 255, 224, 0.2)', overflow: 'hidden'
+      }}>
+        <img src="/crox-logo.jpg" alt="CroX" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.style.display='none'} />
+      </div>
 
       <h1 style={{ fontSize: 48, fontWeight: 800, marginBottom: 16, lineHeight: 1.1 }}>
-        <span className="gradient-text">TrustLayer</span>
+        <span className="gradient-text">CroX</span>
       </h1>
       <p style={{ fontSize: 20, color: 'var(--text-secondary)', maxWidth: 520, marginBottom: 12 }}>
         Smart Escrow Platform powered by AI & Blockchain

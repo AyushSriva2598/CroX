@@ -94,16 +94,17 @@ export default function NewContractPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: 0, right: 0, width: '100%', height: '100%', background: 'radial-gradient(circle at 90% 10%, rgba(131, 110, 249, 0.05) 0%, transparent 60%)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '-5%', right: '-5%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(124, 255, 224, 0.04) 0%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '40%', height: '40%', background: 'radial-gradient(circle, rgba(138, 161, 255, 0.04) 0%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
       <Navbar />
       <main style={{ maxWidth: 840, margin: '0 auto', padding: '64px 24px', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, gap: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 56, gap: 24 }}>
           <div>
-            <div className="badge-active" style={{ fontSize: 11, padding: '4px 12px', borderRadius: '9999px', width: 'fit-content', marginBottom: 16, fontWeight: 800 }}>PROVENANCE PROTOCOL</div>
-            <h1 style={{ fontSize: 40, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.04em' }}>
-              Initialize <span style={{ color: 'var(--accent-primary)' }}>Mandate</span>
+            <span className="badge badge-active" style={{ marginBottom: 20, display: 'inline-block' }}>PROVENANCE PROTOCOL</span>
+            <h1 style={{ fontSize: 40, fontWeight: 800, marginBottom: 12, letterSpacing: '-0.04em' }}>
+              Initialize <span className="gradient-text">Mandate</span>
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 16, fontWeight: 500 }}>
+            <p style={{ color: 'var(--ash-mist)', fontSize: 16, fontWeight: 500, lineHeight: 1.6 }}>
               Define strategic outcomes. AI will architect the milestone sequence.
             </p>
           </div>
@@ -112,85 +113,82 @@ export default function NewContractPage() {
 
         {error && (
           <div style={{
-            background: 'rgba(239, 68, 68, 0.08)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
+            background: 'rgba(255, 110, 110, 0.05)',
+            border: '1px solid rgba(255, 110, 110, 0.2)',
             borderRadius: '16px', padding: '16px 20px', marginBottom: 32,
-            color: 'var(--accent-warning)', fontSize: 14, fontWeight: 600,
-            display: 'flex', alignItems: 'center', gap: 12
+            color: 'var(--accent-warning)', fontSize: 13, fontWeight: 800,
+            display: 'flex', alignItems: 'center', gap: 12,
+            textTransform: 'uppercase', letterSpacing: '0.05em'
           }}>
-            <span style={{ fontSize: 20 }}>⚠️</span> {error}
+            <span>⚠️</span> {error}
           </div>
         )}
 
         {/* Form */}
-        {/* Form */}
-        <div className="glass-card" style={{ padding: 40, marginBottom: 32, borderRadius: '32px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <div className="glass-card" style={{ padding: 48, marginBottom: 32, borderRadius: '32px', border: '1px solid var(--nightline)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
             {/* Title */}
             <div>
-              <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', display: 'block' }}>
-                Strategic Identifier (Title)
+              <label className="tracked-caps" style={{ display: 'block', marginBottom: 12, color: 'var(--text-muted)' }}>
+                Strategic Identifier
               </label>
               <input
                 className="input-field"
                 placeholder="E.G. NEXUS PROTOCOL CORE INFRASTRUCTURE"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                style={{ fontSize: 18, fontWeight: 600 }}
+                style={{ fontSize: 18, fontWeight: 700, width: '100%' }}
               />
             </div>
 
             {/* Description */}
             <div>
-              <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', display: 'block' }}>
-                Mandate Scope (Description)
+              <label className="tracked-caps" style={{ display: 'block', marginBottom: 12, color: 'var(--text-muted)' }}>
+                Mandate Scope
               </label>
               <textarea
                 className="textarea-field"
                 placeholder="Define the primary objectives and success conditions..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                style={{ minHeight: 140, fontSize: 16, lineHeight: 1.6 }}
+                style={{ minHeight: 160, fontSize: 16, lineHeight: 1.7, width: '100%', background: 'transparent', border: '1px solid var(--nightline)', borderRadius: '16px', padding: '16px 20px', color: '#fff' }}
               />
             </div>
 
             {/* Amount */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
-              <div>
-                <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', display: 'block' }}>
-                  Total Settlement Value (MON)
-                </label>
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <input
-                    className="input-field"
-                    type="number"
-                    step="0.01"
-                    min="0.001"
-                    placeholder="0.00"
-                    value={totalAmount}
-                    onChange={(e) => setTotalAmount(e.target.value)}
-                    style={{ fontSize: 24, fontWeight: 900, color: 'var(--accent-primary)', paddingRight: 80 }}
-                  />
-                  <span className="mono-tech" style={{ position: 'absolute', right: 24, fontSize: 14, fontWeight: 800, color: 'var(--text-muted)' }}>MON</span>
-                </div>
+            <div>
+              <label className="tracked-caps" style={{ display: 'block', marginBottom: 12, color: 'var(--text-muted)' }}>
+                Settlement Volume (MON)
+              </label>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0.001"
+                  placeholder="0.00"
+                  value={totalAmount}
+                  onChange={(e) => setTotalAmount(e.target.value)}
+                  style={{ fontSize: 28, fontWeight: 900, color: 'var(--neon-mint)', paddingRight: 80, width: '100%' }}
+                />
+                <span className="mono-tech" style={{ position: 'absolute', right: 24, fontSize: 14, fontWeight: 800, color: 'var(--text-muted)' }}>MON</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* AI Milestone Suggestion */}
-        {/* AI Milestone Suggestion */}
-        <div className="glass-card" style={{ padding: 40, marginBottom: 48, borderRadius: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em' }}>🗺 Strategic Milestones</h3>
+        <div className="glass-card" style={{ padding: 48, marginBottom: 56, borderRadius: '32px', border: '1px solid var(--nightline)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
+            <h3 className="tracked-caps" style={{ color: 'var(--text-muted)' }}>Strategic Milestones</h3>
             {!aiDone && (
               <button
                 onClick={handleAISuggest}
                 className="btn-primary"
                 disabled={aiLoading}
-                style={{ fontSize: 13, padding: '10px 24px' }}
+                style={{ fontSize: 12, padding: '12px 28px' }}
               >
-                {aiLoading ? '✨ PROCESSING ARCHITECTURE...' : '✨ SUGGEST WITH AI'}
+                {aiLoading ? '✨ PROCESSING...' : '✨ SUGGEST WITH AI'}
               </button>
             )}
           </div>
@@ -199,77 +197,69 @@ export default function NewContractPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {milestones.map((m, i) => (
                 <div key={i} className="animate-slide-in" style={{
-                  display: 'flex', gap: 16, alignItems: 'center',
-                  padding: '16px 24px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px',
-                  border: '1px solid var(--border-color)',
+                  display: 'flex', gap: 20, alignItems: 'center',
+                  padding: '20px 28px', background: 'rgba(255,255,255,0.01)', borderRadius: '20px',
+                  border: '1px solid var(--nightline)',
                   animationDelay: `${i * 0.1}s`
                 }}>
-                  <div style={{ 
-                    width: 32, height: 32, borderRadius: '50%', background: 'var(--accent-primary)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                    fontSize: 14, fontWeight: 800, color: '#fff'
-                  }}>{i + 1}</div>
+                  <div className="timeline-dot active" style={{ width: 10, height: 10, flexShrink: 0 }} />
                   <input
                     className="input-field"
                     value={m.name}
                     onChange={(e) => updateMilestone(i, 'name', e.target.value)}
-                    style={{ flex: 1, background: 'transparent', border: 'none', padding: 0, fontSize: 16, fontWeight: 600 }}
+                    style={{ flex: 1, background: 'transparent', border: 'none', padding: 0, fontSize: 16, fontWeight: 700, boxShadow: 'none' }}
                     placeholder="Milestone Objective"
                   />
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <input
-                      className="input-field"
+                      className="input-field mono-tech"
                       type="number"
                       step="0.01"
                       value={m.amount}
                       onChange={(e) => updateMilestone(i, 'amount', parseFloat(e.target.value) || 0)}
-                      style={{ width: 100, textAlign: 'right', fontWeight: 800, color: 'var(--accent-secondary)' }}
+                      style={{ width: 110, textAlign: 'right', fontWeight: 800, color: 'var(--neon-mint)', background: 'transparent', border: 'none', padding: '0 4px', boxShadow: 'none' }}
                     />
-                    <span className="mono-tech" style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>MON</span>
+                    <span className="mono-tech" style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 800 }}>MON</span>
                   </div>
                   <button
                     onClick={() => removeMilestone(i)}
-                    style={{ background: 'rgba(239, 68, 68, 0.1)', border: 'none', color: '#ef4444', cursor: 'pointer', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800 }}
+                    style={{ background: 'rgba(255, 110, 110, 0.1)', border: 'none', color: 'var(--accent-warning)', cursor: 'pointer', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, flexShrink: 0 }}
                   >✕</button>
                 </div>
               ))}
               <button onClick={addMilestone} style={{
-                background: 'transparent', border: '2px dashed var(--border-color)',
-                borderRadius: '16px', padding: 16, color: 'var(--text-muted)',
-                cursor: 'pointer', fontSize: 14, fontWeight: 700, transition: 'all 0.2s ease',
-                marginTop: 8
+                background: 'transparent', border: '1px dashed var(--nightline)',
+                borderRadius: '20px', padding: 20, color: 'var(--text-muted)',
+                cursor: 'pointer', fontSize: 12, fontWeight: 800, transition: 'all 0.3s ease',
+                textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 8
               }}
-              onMouseOver={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
-              onMouseOut={(e) => e.target.style.borderColor = 'var(--border-color)'}
+              onMouseOver={(e) => { e.target.style.borderColor = 'var(--neon-mint)'; e.target.style.color = 'var(--neon-mint)'; }}
+              onMouseOut={(e) => { e.target.style.borderColor = 'var(--nightline)'; e.target.style.color = 'var(--text-muted)'; }}
               >
-                + ADD MANUAL MILESTONE
+                + Add Milestone
               </button>
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '40px 20px', border: '2px dashed var(--border-color)', borderRadius: '24px' }}>
-              <p style={{ fontSize: 16, color: 'var(--text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
-                Quantify the mandate scope and amount, then use the AI agent to generate<br/>a strategic milestone sequence automatically.
+            <div style={{ textAlign: 'center', padding: '56px 20px', border: '1px dashed var(--nightline)', borderRadius: '24px' }}>
+              <div style={{ fontSize: 32, marginBottom: 20, opacity: 0.2 }}>💠</div>
+              <p style={{ fontSize: 15, color: 'var(--ash-mist)', marginBottom: 28, lineHeight: 1.7, fontWeight: 500 }}>
+                Quantify the mandate scope and amount, then use the AI<br/>agent to generate a strategic milestone sequence.
               </p>
-              <button onClick={addMilestone} style={{
-                background: 'rgba(131, 110, 249, 0.05)', border: '1px solid rgba(131, 110, 249, 0.2)',
-                borderRadius: '9999px', padding: '12px 28px', color: 'var(--accent-primary)',
-                cursor: 'pointer', fontSize: 14, fontWeight: 800
-              }}>
-                OR ARCHITECT MANUALLY
+              <button onClick={addMilestone} className="btn-secondary" style={{ fontSize: 11, padding: '12px 28px' }}>
+                ARCHITECT MANUALLY
               </button>
             </div>
           )}
         </div>
 
-        {/* Create Button */}
-        {/* Create Button */}
+        {/* Deploy Button */}
         <button
           onClick={handleCreate}
           className="btn-primary"
           disabled={loading || !title || !totalAmount}
-          style={{ width: '100%', fontSize: 18, padding: '20px 0', fontWeight: 800, boxShadow: '0 20px 40px rgba(131, 110, 249, 0.2)' }}
+          style={{ width: '100%', fontSize: 16, padding: '22px 0', boxShadow: '0 0 40px rgba(124, 255, 224, 0.2)' }}
         >
-          {loading ? '🚀 INITIALIZING Mandate...' : '🚀 DEPLOY PROTOCOL'}
+          {loading ? 'INITIALIZING...' : 'DEPLOY MANDATE PROTOCOL'}
         </button>
       </main>
     </div>

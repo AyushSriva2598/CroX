@@ -29,7 +29,18 @@ export default function ContractDetailPage({ params }) {
     if (!token) { router.push('/login'); return; }
     if (userStr) setUser(JSON.parse(userStr));
     fetchData();
-  }, [id, router]);
+
+    // Auto-reload every 5 seconds for active contracts
+    const interval = setInterval(() => {
+      if (data && ['completed', 'cancelled', 'refunded'].includes(data.contract.state)) {
+        clearInterval(interval);
+        return;
+      }
+      fetchData();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [id, router, !!data]);
 
   const fetchData = async () => {
     try {
@@ -169,7 +180,7 @@ export default function ContractDetailPage({ params }) {
     'submit_work': { label: 'Submit Work', class: 'btn-primary', icon: '📎' },
     approve: { 
       label: isPartial && currentMilestone < milestones.length - 1 
-        ? `Approve Phase ${currentMilestone + 1}` 
+        ? `Approve ${milestones[currentMilestone]?.name || `Phase ${currentMilestone + 1}`}` 
         : 'Approve & Release Final', 
       class: 'btn-success', icon: '✅' },
     dispute: { label: 'Raise Dispute', class: 'btn-danger', icon: '⚠️' },
@@ -196,13 +207,20 @@ export default function ContractDetailPage({ params }) {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', position: 'relative', overflowX: 'hidden' }}>
+      {/* Dynamic Background Glows */}
       <div style={{ 
-        position: 'absolute', top: '5%', right: '-10%', width: '50%', height: '50%', 
-        background: 'radial-gradient(circle, rgba(131, 110, 249, 0.08) 0%, transparent 70%)', 
+        position: 'absolute', top: '10%', right: '-10%', width: '50%', height: '50%', 
+        background: 'radial-gradient(circle, rgba(138, 161, 255, 0.04) 0%, transparent 70%)', 
         zIndex: 0, pointerEvents: 'none' 
       }} />
+      <div style={{ 
+        position: 'absolute', bottom: '10%', left: '-10%', width: '40%', height: '40%', 
+        background: 'radial-gradient(circle, rgba(124, 255, 224, 0.03) 0%, transparent 70%)', 
+        zIndex: 0, pointerEvents: 'none' 
+      }} />
+      
       <Navbar />
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 24px', position: 'relative', zIndex: 1 }}>
         {error && (
           <div style={{
             background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--accent-warning)',
@@ -215,58 +233,57 @@ export default function ContractDetailPage({ params }) {
         )}
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 56 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-              <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.03em' }}>{contract.title}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 16 }}>
+              <h1 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em' }}>{contract.title}</h1>
               <StateBadge state={contract.state} />
             </div>
-            <p className="mono-tech" style={{ color: 'var(--text-muted)', fontSize: 12, opacity: 0.7 }}>Ecosystem ID: {contract.id}</p>
+            <p className="mono-tech" style={{ color: 'var(--text-muted)', fontSize: 11, opacity: 0.6, letterSpacing: '0.05em' }}>MANDATE_ID: {contract.id}</p>
           </div>
-          <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 16 }}>
+          <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 24 }}>
             <WalletButton />
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-muted)' }}>MON</span>
-              <p className="mono-tech" style={{ fontSize: 42, fontWeight: 800, color: 'var(--accent-secondary)', lineHeight: 1 }}>
-                {parseFloat(contract.total_amount).toFixed(2)}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="tracked-caps" style={{ fontSize: 11, color: 'var(--text-muted)' }}>SETTLEMENT VOLUME</span>
+              <p className="mono-tech" style={{ fontSize: 44, fontWeight: 800, color: 'var(--neon-mint)', lineHeight: 1 }}>
+                {parseFloat(contract.total_amount).toLocaleString()} <span style={{ fontSize: 14, opacity: 0.5 }}>MON</span>
               </p>
             </div>
           </div>
         </div>
 
-        {/* State Machine Progress */}
-        <div className="glass-card" style={{ padding: '24px 32px', marginBottom: 40, borderRadius: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflowX: 'auto', padding: '10px 0' }}>
+        {/* Progress Timeline */}
+        <div className="glass-card" style={{ padding: '32px 48px', marginBottom: 64, borderRadius: '32px', border: '1px solid var(--nightline)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, overflowX: 'auto', padding: '10px 0' }}>
             {allStates.map((s, i) => {
               const isCurrent = s === contract.state;
               const isPast = i < currentIdx;
+              const label = s.replace('_', ' ').toUpperCase();
               return (
-                <div key={s} style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 120 }}>
+                <div key={s} style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 150 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%',
-                      background: isCurrent ? 'var(--accent-primary)' : isPast ? 'rgba(131, 110, 249, 0.2)' : 'rgba(255,255,255,0.05)',
-                      border: `1.5px solid ${isCurrent ? 'var(--accent-primary)' : isPast ? 'var(--accent-primary)' : 'var(--border-color)'}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 12, color: 'white', fontWeight: 800,
-                      boxShadow: isCurrent ? '0 0 20px rgba(131, 110, 249, 0.4)' : 'none'
+                    <div className={`timeline-dot ${isCurrent || isPast ? 'active' : ''}`} style={{ 
+                      width: 14, height: 14,
+                      background: isCurrent || isPast ? 'var(--neon-mint)' : 'var(--nightline)',
+                      zIndex: 1
                     }}>
-                      {isPast ? '✓' : i + 1}
                     </div>
                     <span style={{
-                      fontSize: 10, marginTop: 10, textAlign: 'center',
-                      color: isCurrent ? 'var(--accent-primary)' : isPast ? 'var(--text-primary)' : 'var(--text-muted)',
-                      fontWeight: isCurrent || isPast ? 700 : 500,
-                      textTransform: 'uppercase', letterSpacing: '0.05em'
+                      fontSize: 10, marginTop: 16, textAlign: 'center',
+                      color: isCurrent ? 'var(--neon-mint)' : isPast ? 'var(--text-primary)' : 'var(--text-muted)',
+                      fontWeight: 800,
+                      letterSpacing: '0.1em',
+                      transition: 'all 0.3s ease'
                     }}>
-                      {s.replace('_', ' ')}
+                      {label}
                     </span>
                   </div>
                   {i < allStates.length - 1 && (
                     <div style={{
-                      height: 1, flex: '1 0 20px',
-                      background: isPast ? 'var(--accent-primary)' : 'var(--border-color)',
-                      marginTop: -22, margin: '0 8px'
+                      height: 1, flex: '1 0 40px',
+                      background: isPast ? 'var(--neon-mint)' : 'var(--nightline)',
+                      opacity: isPast ? 0.4 : 1,
+                      marginTop: -26, margin: '0 0'
                     }} />
                   )}
                 </div>
@@ -278,54 +295,46 @@ export default function ContractDetailPage({ params }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
           {/* Left column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {/* Details */}
-            <div className="glass-card" style={{ padding: 32, borderRadius: '32px' }}>
-              <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 24, letterSpacing: '-0.02em' }}>Ecosystem Scope</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            {/* Details Grid */}
+            <div className="glass-card" style={{ padding: 48, borderRadius: '32px', border: '1px solid var(--nightline)' }}>
+              <h3 className="tracked-caps" style={{ color: 'var(--text-muted)', marginBottom: 32 }}>Mandate Architecture</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
                 {[
-                  { label: 'Payer Account', value: contract.payer_detail?.phone_number || '—' },
-                  { label: 'Payee Account', value: contract.payee_detail?.phone_number || contract.payee_phone || 'Unassigned' },
-                  { label: 'Ecosystem Risk', value: `${contract.risk_score}/100`, color: contract.risk_score > 50 ? 'var(--accent-warning)' : 'var(--accent-success)' },
-                  { label: 'Initialization', value: new Date(contract.created_at).toLocaleDateString() },
+                  { label: 'Originating node', value: contract.payer_detail?.email || '—', color: 'var(--lumen-blue)' },
+                  { label: 'Executing node', value: contract.payee_detail?.email || contract.payee_email || 'AWAITING AUTHORIZATION', color: contract.payee_email ? 'var(--neon-mint)' : 'var(--text-muted)' },
+                  { label: 'Ecosystem integrity', value: `${contract.risk_score}/100 PROBABILITY`, color: contract.risk_score > 50 ? 'var(--accent-warning)' : 'var(--neon-mint)' },
+                  { label: 'Mandate genesis', value: new Date(contract.created_at).toLocaleDateString() },
                 ].map((item, i) => (
                   <div key={i}>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>{item.label}</p>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: item.color || 'white' }}>{item.value}</p>
+                    <p className="tracked-caps" style={{ color: 'var(--text-muted)', marginBottom: 12, fontSize: 10 }}>{item.label}</p>
+                    <p style={{ fontSize: 16, fontWeight: 700, color: item.color || '#fff', letterSpacing: '-0.01em' }}>{item.value}</p>
                   </div>
                 ))}
                 {contract.worker_wallet && (
-                  <div style={{ gridColumn: '1 / -1' }}>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', fontWeight: 800 }}>Settlement Wallet</p>
-                    <p className="mono-tech" style={{ fontSize: 13, color: 'var(--accent-primary)', wordBreak: 'break-all', background: 'rgba(131, 110, 249, 0.05)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(131, 110, 249, 0.1)' }}>{contract.worker_wallet}</p>
+                  <div style={{ gridColumn: '1 / -1', padding: '24px', background: 'rgba(124, 255, 224, 0.03)', borderRadius: '16px', border: '1px solid rgba(124, 255, 224, 0.1)' }}>
+                    <p className="tracked-caps" style={{ color: 'var(--neon-mint)', marginBottom: 12, fontSize: 9 }}>SETTLEMENT WALLET ADDRESS</p>
+                    <p className="mono-tech" style={{ fontSize: 14, color: 'var(--neon-mint)', wordBreak: 'break-all', fontWeight: 700 }}>{contract.worker_wallet}</p>
                   </div>
                 )}
               </div>
               {contract.description && (
-                <div style={{ marginTop: 24 }}>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', fontWeight: 800 }}>Strategic Mandate</p>
-                  <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{contract.description}</p>
+                <div style={{ marginTop: 48 }}>
+                  <p className="tracked-caps" style={{ color: 'var(--text-muted)', marginBottom: 16 }}>Detailed Strategic Mandate</p>
+                  <p style={{ fontSize: 17, color: 'var(--ash-mist)', lineHeight: 1.8, fontWeight: 500 }}>{contract.description}</p>
                 </div>
-              )}
-              {contract.terms && !contract.terms.milestones && Object.keys(contract.terms).length > 0 && (
-                <details style={{ marginTop: 24 }}>
-                  <summary style={{ fontSize: 13, color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 700 }}>VERIFY RAW PROTOCOL DATA</summary>
-                  <pre className="mono-tech" style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'pre-wrap', marginTop: 12, padding: 16, background: 'rgba(0,0,0,0.2)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
-                    {JSON.stringify(contract.terms, null, 2)}
-                  </pre>
-                </details>
               )}
             </div>
 
-            {/* Milestones */}
+            {/* Milestones Sections */}
             {milestones.length > 0 && (
-              <div className="glass-card" style={{ padding: 32, borderRadius: '32px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em' }}>🗺 Strategic Milestones</h3>
-                  <div className="badge-active" style={{ fontSize: 11, padding: '4px 12px', borderRadius: '9999px', fontWeight: 800 }}>
-                    {currentMilestone >= milestones.length ? 'ALL COMPLETED' : `PHASE ${currentMilestone + 1} OF ${milestones.length}`}
+              <div className="glass-card" style={{ padding: 48, borderRadius: '32px', border: '1px solid var(--nightline)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+                  <h3 className="tracked-caps" style={{ color: 'var(--text-muted)' }}>Strategic Milestones</h3>
+                  <div className="badge-active" style={{ fontSize: 11, padding: '6px 16px' }}>
+                    {currentMilestone >= milestones.length ? 'SETTLED' : `PHASE ${currentMilestone + 1} OF ${milestones.length}`}
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {milestones.map((m, i) => {
                     const isPast = i < currentMilestone;
                     const isCurrent = i === currentMilestone && ['funds_locked', 'work_submitted'].includes(contract.state);
@@ -333,34 +342,26 @@ export default function ContractDetailPage({ params }) {
                     
                     return (
                       <div key={i} style={{
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px',
-                        background: isCurrent ? 'rgba(131, 110, 249, 0.08)' : 'rgba(255,255,255,0.02)',
-                        border: `1px solid ${isCurrent ? 'rgba(131, 110, 249, 0.3)' : 'rgba(255,255,255,0.05)'}`,
-                        borderRadius: '16px',
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 32px',
+                        background: isCurrent ? 'rgba(124, 255, 224, 0.03)' : 'rgba(255,255,255,0.01)',
+                        border: `1px solid ${isCurrent ? 'rgba(124, 255, 224, 0.2)' : 'var(--nightline)'}`,
+                        borderRadius: '20px',
                         opacity: isUpcoming ? 0.6 : 1,
                         transition: 'all 0.3s ease'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                          <div style={{
-                            width: 28, height: 28, borderRadius: '50%',
-                            background: isPast ? 'var(--accent-success)' : isCurrent ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 12, color: isPast ? '#000' : '#fff', fontWeight: 800,
-                            boxShadow: isCurrent ? '0 0 15px rgba(131, 110, 249, 0.3)' : 'none'
-                          }}>
-                            {isPast ? '✓' : i + 1}
-                          </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                          <div className={`timeline-dot ${isPast || isCurrent ? 'active' : ''}`} style={{ width: 10, height: 10 }} />
                           <div>
-                            <span style={{ fontSize: 15, fontWeight: isCurrent ? 800 : 600, color: isCurrent ? 'var(--accent-primary)' : '#fff', display: 'block' }}>
+                            <span style={{ fontSize: 16, fontWeight: 800, color: isCurrent ? 'var(--neon-mint)' : '#fff', display: 'block', letterSpacing: '-0.01em' }}>
                               {m.name}
                             </span>
-                            {m.description && <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{m.description}</span>}
+                            {m.description && <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500, marginTop: 4, display: 'block' }}>{m.description}</span>}
                           </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <span className="mono-tech" style={{ fontSize: 16, fontWeight: 800, color: isCurrent ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
-                            {parseFloat(m.amount).toFixed(2)} <span style={{ fontSize: 11, opacity: 0.6 }}>MON</span>
-                          </span>
+                          <p className="mono-tech" style={{ fontSize: 18, fontWeight: 800, color: isCurrent ? 'var(--neon-mint)' : 'var(--ash-mist)' }}>
+                            {parseFloat(m.amount).toLocaleString()} <span style={{ fontSize: 11, opacity: 0.5 }}>MON</span>
+                          </p>
                         </div>
                       </div>
                     );
@@ -369,11 +370,11 @@ export default function ContractDetailPage({ params }) {
               </div>
             )}
 
-            {/* Actions */}
+            {/* Operational Nexus (Actions) */}
             {allowedActions.length > 0 && (
-              <div className="glass-card" style={{ padding: 32, borderRadius: '32px', borderLeft: '4px solid var(--accent-primary)' }}>
-                <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 20, letterSpacing: '-0.02em' }}>Administrative Nexus</h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+              <div className="glass-card" style={{ padding: 48, borderRadius: '32px', border: '1px solid var(--neon-mint)', background: 'rgba(124, 255, 224, 0.02)' }}>
+                <h3 className="tracked-caps" style={{ color: 'var(--neon-mint)', marginBottom: 32 }}>Administrative Nexus</h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
                   {allowedActions.filter(a => a !== 'dispute').map(action => {
                     const cfg = actionConfig[action] || { label: action, class: 'btn-primary', icon: '▶' };
                     return (
@@ -381,8 +382,8 @@ export default function ContractDetailPage({ params }) {
                         key={action}
                         onClick={() => handleAction(action)}
                         className={cfg.class}
-                        disabled={actionLoading === action}
-                        style={{ padding: '14px 28px', fontSize: 14 }}
+                        disabled={!!actionLoading}
+                        style={{ padding: '16px 32px', fontSize: 13, flex: 1, minWidth: 200 }}
                       >
                         {actionLoading === action ? '⏳' : cfg.icon} {cfg.label}
                       </button>
@@ -392,14 +393,14 @@ export default function ContractDetailPage({ params }) {
                     <button
                       onClick={() => setShowDispute(!showDispute)}
                       className="btn-danger"
-                      style={{ padding: '14px 28px', fontSize: 14 }}
+                      style={{ padding: '16px 32px', fontSize: 13, minWidth: 200 }}
                     >⚠️ Raise Dispute</button>
                   )}
                 </div>
 
                 {showSubmitModal && (
                   <div style={{ marginTop: 24, padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px solid var(--glass-border)' }}>
-                    <h4 style={{ fontSize: 16, fontWeight: 800, marginBottom: 12 }}>Confirm Deliverables — Phase {currentMilestone + 1}</h4>
+                    <h4 style={{ fontSize: 16, fontWeight: 800, marginBottom: 12 }}>Confirm Deliverables — {milestones[currentMilestone]?.name || `Phase ${currentMilestone + 1}`}</h4>
                     <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 20, lineHeight: 1.5 }}>
                       Please link the digital proof of work (GitHub PR, Figma, Doc). The Payer will review this link before settling the escrow fraction.
                     </p>
@@ -491,52 +492,54 @@ export default function ContractDetailPage({ params }) {
 
           {/* Right sidebar */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {/* Escrow */}
-            <div className="glass-card" style={{ padding: 28, borderRadius: '32px', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, right: 0, width: '40%', height: '40%', background: 'radial-gradient(circle, rgba(131, 110, 249, 0.1) 0%, transparent 70%)', zIndex: 0 }} />
-              <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 20, letterSpacing: '-0.02em', position: 'relative', zIndex: 1 }}>💸 Protocol Ledger</h3>
+            {/* Escrow Vault */}
+            <div className="glass-card" style={{ padding: 32, borderRadius: '32px', border: '1px solid var(--nightline)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, right: 0, width: '40%', height: '40%', background: 'radial-gradient(circle, rgba(124, 255, 224, 0.05) 0%, transparent 70%)', zIndex: 0 }} />
+              <h3 className="tracked-caps" style={{ color: 'var(--text-muted)', marginBottom: 24, position: 'relative', zIndex: 1 }}>Protocol Ledger</h3>
               {escrow ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'relative', zIndex: 1 }}>
                   {[
-                    { label: 'Total Locked', value: escrow.locked, color: 'white' },
-                    { label: 'Phase Released', value: escrow.released, color: 'var(--accent-secondary)' },
-                    { label: 'Clawbacked', value: escrow.refunded, color: 'var(--accent-warning)' },
+                    { label: 'TOTAL LOCKED', value: escrow.locked, color: 'white' },
+                    { label: 'PHASE RELEASED', value: escrow.released, color: 'var(--lumen-blue)' },
+                    { label: 'CLAWBACKED', value: escrow.refunded, color: 'var(--accent-warning)' },
                   ].map((item, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600 }}>{item.label}</span>
-                      <span className="mono-tech" style={{ fontSize: 15, fontWeight: 800, color: item.color }}>{parseFloat(item.value).toFixed(2)} <span style={{ fontSize: 10, opacity: 0.6 }}>MON</span></span>
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.1em' }}>{item.label}</span>
+                      <span className="mono-tech" style={{ fontSize: 15, fontWeight: 800, color: item.color }}>{parseFloat(item.value).toLocaleString()} <span style={{ fontSize: 10, opacity: 0.5 }}>MON</span></span>
                     </div>
                   ))}
-                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 16, marginTop: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-primary)' }}>LIQUIDITY</span>
-                    <span className="mono-tech" style={{ fontSize: 20, fontWeight: 800, color: 'var(--accent-primary)' }}>{parseFloat(escrow.available).toFixed(2)} <span style={{ fontSize: 12, opacity: 0.6 }}>MON</span></span>
+                  <div style={{ borderTop: '1px solid var(--nightline)', paddingTop: 20, marginTop: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="tracked-caps" style={{ color: 'var(--neon-mint)' }}>LIQUIDITY</span>
+                    <span className="mono-tech" style={{ fontSize: 22, fontWeight: 800, color: 'var(--neon-mint)' }}>{parseFloat(escrow.available).toLocaleString()} <span style={{ fontSize: 11, opacity: 0.5 }}>MON</span></span>
                   </div>
                 </div>
               ) : (
-                <p style={{ fontSize: 14, color: 'var(--text-muted)', position: 'relative', zIndex: 1 }}>Escrow protocol not yet initialized.</p>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', position: 'relative', zIndex: 1, fontWeight: 500 }}>Escrow vault not yet initialized.</p>
               )}
             </div>
 
-            {/* Blockchain */}
-            <div className="glass-card" style={{ padding: 28, borderRadius: '32px' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 14, letterSpacing: '-0.02em' }}>⛓ Proof of Intent</h3>
+            {/* Blockchain Proof */}
+            <div className="glass-card" style={{ padding: 32, borderRadius: '32px', border: '1px solid var(--nightline)' }}>
+              <h3 className="tracked-caps" style={{ color: 'var(--text-muted)', marginBottom: 20 }}>Proof of Intent</h3>
               {contract.blockchain_verified ? (
                 <div className="animate-slide-in">
                   <div style={{
-                    background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-success)',
-                    padding: '12px 14px', borderRadius: '16px', fontSize: 13, fontWeight: 700, marginBottom: 16,
-                    textAlign: 'center', border: '1px solid rgba(16, 185, 129, 0.2)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
-                  }}><span>✅</span> VERIFIED ON MONAD</div>
+                    background: 'rgba(124, 255, 224, 0.05)', color: 'var(--neon-mint)',
+                    padding: '14px 16px', borderRadius: '16px', fontSize: 11, fontWeight: 800, marginBottom: 20,
+                    textAlign: 'center', border: '1px solid rgba(124, 255, 224, 0.2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                    letterSpacing: '0.1em', textTransform: 'uppercase'
+                  }}>⛓ VERIFIED ON MONAD</div>
                   <a
                     href={`https://testnet.monadscan.com/tx/${contract.blockchain_tx_hash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mono-tech"
                     style={{
-                      fontSize: 12, color: 'var(--accent-primary)', wordBreak: 'break-all',
-                      display: 'block', textDecoration: 'none', background: 'rgba(255,255,255,0.02)',
-                      padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)'
+                      fontSize: 11, color: 'var(--neon-mint)', wordBreak: 'break-all',
+                      display: 'block', textDecoration: 'none', background: 'rgba(124, 255, 224, 0.03)',
+                      padding: '14px', borderRadius: '12px', border: '1px solid rgba(124, 255, 224, 0.1)',
+                      fontWeight: 700
                     }}
                   >
                     🔗 {contract.blockchain_tx_hash?.slice(0, 16)}...{contract.blockchain_tx_hash?.slice(-16)}
@@ -544,37 +547,37 @@ export default function ContractDetailPage({ params }) {
                 </div>
               ) : (
                 <div>
-                  <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 20, lineHeight: 1.5 }}>
-                    Secure this agreement on the Monad testnet to ensure immutable project proof.
+                  <p style={{ fontSize: 13, color: 'var(--ash-mist)', marginBottom: 24, lineHeight: 1.6, fontWeight: 500 }}>
+                    Anchor this mandate on the Monad testnet for immutable settlement proof.
                   </p>
                   <button
                     onClick={handleBlockchain}
-                    className="btn-primary"
+                    className="btn-secondary"
                     disabled={actionLoading === 'blockchain'}
-                    style={{ width: '100%', padding: '14px' }}
+                    style={{ width: '100%', padding: '14px', borderColor: 'rgba(124, 255, 224, 0.2)', color: 'var(--neon-mint)' }}
                   >
-                    {actionLoading === 'blockchain' ? '✨ SYNCING...' : 'REGISTER ON-CHAIN'}
+                    {actionLoading === 'blockchain' ? 'SYNCING...' : 'REGISTER ON-CHAIN'}
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Risk */}
+            {/* Risk Matrix */}
             {contract.risk_flags?.length > 0 && (
-              <div className="glass-card" style={{ padding: 28, borderRadius: '32px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 20, letterSpacing: '-0.02em' }}>⚠️ Risk Matrix</h3>
+              <div className="glass-card" style={{ padding: 32, borderRadius: '32px', border: '1px solid rgba(255, 110, 110, 0.15)' }}>
+                <h3 className="tracked-caps" style={{ color: 'var(--accent-warning)', marginBottom: 24 }}>Risk Matrix</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {contract.risk_flags.map((flag, i) => (
                     <div key={i} style={{
-                      fontSize: 13, padding: '12px 16px', borderRadius: '12px',
-                      background: flag.severity === 'critical' ? 'rgba(239, 68, 68, 0.1)' :
-                                  flag.severity === 'warning' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(131, 110, 249, 0.05)',
+                      fontSize: 12, padding: '14px 18px', borderRadius: '14px',
+                      background: flag.severity === 'critical' ? 'rgba(255, 110, 110, 0.05)' :
+                                  flag.severity === 'warning' ? 'rgba(255, 209, 102, 0.05)' : 'rgba(138, 161, 255, 0.05)',
                       color: flag.severity === 'critical' ? 'var(--accent-warning)' :
-                             flag.severity === 'warning' ? 'var(--accent-amber)' : 'var(--text-secondary)',
-                      border: `1px solid ${flag.severity === 'critical' ? 'rgba(239, 68, 68, 0.2)' : 'transparent'}`,
-                      lineHeight: 1.4
+                             flag.severity === 'warning' ? 'var(--accent-amber)' : 'var(--ash-mist)',
+                      border: `1px solid ${flag.severity === 'critical' ? 'rgba(255, 110, 110, 0.2)' : 'var(--nightline)'}`,
+                      lineHeight: 1.5, fontWeight: 600
                     }}>
-                      <span style={{ fontWeight: 800, textTransform: 'uppercase', marginRight: 8 }}>[{flag.severity}]</span>
+                      <span style={{ fontWeight: 800, textTransform: 'uppercase', marginRight: 10, letterSpacing: '0.05em', fontSize: 10 }}>[{flag.severity}]</span>
                       {flag.message}
                     </div>
                   ))}

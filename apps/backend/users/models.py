@@ -4,20 +4,21 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, phone_number, email=None, password=None, **extra_fields):
-        if not phone_number:
-            raise ValueError('Phone number is required')
-        user = self.model(phone_number=phone_number, email=email, **extra_fields)
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Email address is required')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
         if password:
             user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone_number, email=None, password=None, **extra_fields):
+    def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_verified', True)
-        return self.create_user(phone_number, email, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -28,8 +29,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    phone_number = models.CharField(max_length=15, unique=True)
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
     full_name = models.CharField(max_length=255, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='payer')
     is_verified = models.BooleanField(default=False)
@@ -41,16 +42,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'phone_number'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return f"{self.phone_number} ({self.full_name or 'No name'})"
+        return f"{self.email} ({self.full_name or 'No name'})"
 
 
 class OTPToken(models.Model):
-    """Stores OTP codes for phone/email verification."""
-    phone_number = models.CharField(max_length=15)
+    """Stores OTP codes for email verification."""
+    email = models.EmailField()
     otp_code = models.CharField(max_length=6)
     is_used = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -60,7 +61,7 @@ class OTPToken(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"OTP for {self.phone_number}"
+        return f"OTP for {self.email}"
 
 
 class AuthToken(models.Model):
@@ -70,4 +71,4 @@ class AuthToken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Token for {self.user.phone_number}"
+        return f"Token for {self.user.email}"

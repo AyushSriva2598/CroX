@@ -23,11 +23,11 @@ from .services import send_sms_otp, send_email_otp
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def send_otp(request):
-    """Send OTP to phone number. Creates user if not exists."""
+    """Send OTP to email address. Creates user if not exists."""
     serializer = SendOTPSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    phone = serializer.validated_data['phone_number']
+    email = serializer.validated_data['email']
     full_name = serializer.validated_data.get('full_name', '')
 
     # Generate 6-digit OTP
@@ -35,22 +35,17 @@ def send_otp(request):
 
     # Store OTP
     OTPToken.objects.create(
-        phone_number=phone,
+        email=email,
         otp_code=otp_code,
         expires_at=timezone.now() + timedelta(minutes=10)
     )
 
-    # Send via new service (Twilio-pluggable)
-    send_sms_otp(phone, otp_code)
+    # Send via email service
+    send_email_otp(email, otp_code)
     
-    # Also try email if user exists and has email
-    user = User.objects.filter(phone_number=phone).first()
-    if user and user.email:
-        send_email_otp(user.email, otp_code)
-
     return Response({
         'message': 'OTP sent successfully',
-        'phone_number': phone,
+        'email': email,
     }, status=status.HTTP_200_OK)
 
 
@@ -61,12 +56,12 @@ def verify_otp(request):
     serializer = VerifyOTPSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    phone = serializer.validated_data['phone_number']
+    email = serializer.validated_data['email']
     otp_code = serializer.validated_data['otp_code']
 
     # Find valid OTP
     otp = OTPToken.objects.filter(
-        phone_number=phone,
+        email=email,
         otp_code=otp_code,
         is_used=False,
         expires_at__gt=timezone.now()
@@ -84,7 +79,7 @@ def verify_otp(request):
 
     # Get or create user
     user, created = User.objects.get_or_create(
-        phone_number=phone,
+        email=email,
         defaults={'is_verified': True}
     )
     if not user.is_verified:
@@ -109,14 +104,14 @@ def demo_oauth_login(request):
     
     # Create or get standard demo users
     if role == 'admin':
-        phone = '+10000000000'
+        email = 'admin@trustlayer.dev'
         name = 'Demo Admin'
     else:
-        phone = '+19999999999'
+        email = 'worker@trustlayer.dev'
         name = 'Demo Worker'
         
     user, created = User.objects.get_or_create(
-        phone_number=phone,
+        email=email,
         defaults={
             'is_verified': True,
             'full_name': name
@@ -166,7 +161,6 @@ def google_login(request):
         user, created = User.objects.get_or_create(
             email=email,
             defaults={
-                'phone_number': dummy_phone,
                 'full_name': name,
                 'is_verified': True
             }

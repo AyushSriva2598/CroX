@@ -9,9 +9,10 @@ export default function WalletButton() {
 
   useEffect(() => {
     // Check if already connected
-    getConnectedAddress().then(addr => {
+    (async () => {
+      const addr = await getConnectedAddress();
       if (addr) setAddress(addr);
-    }).catch(() => {});
+    })();
 
     // Listen for account changes
     if (typeof window !== 'undefined' && window.ethereum) {
@@ -39,20 +40,17 @@ export default function WalletButton() {
 
   if (address) {
     return (
-        <div style={{
-          padding: '8px 16px', borderRadius: '9999px',
-          background: 'rgba(131, 110, 249, 0.1)',
-          border: '1px solid var(--glass-border)',
-          fontSize: 13, fontWeight: 700,
+        <div className="glass-card" style={{
+          padding: '8px 18px', borderRadius: '9999px',
+          background: 'rgba(124, 255, 224, 0.05)',
+          border: '1px solid rgba(124, 255, 224, 0.15)',
+          fontSize: 12, fontWeight: 800,
           display: 'flex', alignItems: 'center', gap: 10,
-          color: 'var(--accent-primary)'
+          color: 'var(--neon-mint)',
+          boxShadow: '0 0 15px rgba(124, 255, 224, 0.1)'
         }}>
-          <div style={{
-            width: 8, height: 8, borderRadius: '50%',
-            background: 'var(--accent-primary)',
-            boxShadow: '0 0 10px var(--accent-primary)'
-          }} />
-          <span className="mono-tech">{truncate(address)}</span>
+          <div className="timeline-dot active" style={{ width: 8, height: 8 }} />
+          <span className="mono-tech" style={{ letterSpacing: '0.05em' }}>{truncate(address)}</span>
         </div>
     );
   }

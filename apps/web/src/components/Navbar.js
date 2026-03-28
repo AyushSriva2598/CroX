@@ -24,17 +24,18 @@ export default function Navbar() {
   return (
     <nav style={{
       position: 'sticky',
-      top: 12,
+      top: 16,
       left: 24,
       right: 24,
-      zIndex: 50,
-      background: 'rgba(11, 11, 15, 0.7)',
-      backdropFilter: 'blur(32px)',
-      WebkitBackdropFilter: 'blur(32px)',
-      border: '1px solid var(--glass-border)',
+      zIndex: 100,
+      background: 'rgba(6, 8, 15, 0.6)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid var(--nightline)',
       borderRadius: '24px',
       margin: '0 24px',
       padding: '0 24px',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
     }}>
       <div style={{
         maxWidth: 1200,
@@ -45,40 +46,40 @@ export default function Navbar() {
         height: 64,
       }}>
         <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="pixel-logo" style={{
-            fontSize: 24,
-            fontWeight: 900,
-            background: 'var(--accent-primary)',
-            padding: '4px 10px',
-            borderRadius: 8,
-            color: '#fff'
-          }}>TL</div>
-          <span style={{ fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>TrustLayer</span>
+          <img src="/crox-logo.jpg" alt="CroX Logo" style={{ width: 32, height: 32, borderRadius: '8px', objectFit: 'cover', boxShadow: '0 0 15px rgba(124, 255, 224, 0.3)' }} onError={(e) => e.target.style.display='none'} />
+          <span style={{ 
+            fontFamily: 'Sora',
+            fontWeight: 800, 
+          }}>
+            Cro<span style={{ color: 'var(--neon-mint)' }}>X</span>
+          </span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Link href="/dashboard" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+          <Link href="/dashboard" style={{ color: 'var(--ash-mist)', textDecoration: 'none', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             Dashboard
           </Link>
-          <Link href="/contracts/new" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-            New Contract
+          <Link href="/contracts/new" style={{ color: 'var(--ash-mist)', textDecoration: 'none', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            Initialize
           </Link>
           {user && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span className="mono-tech" style={{ color: 'var(--text-muted)', fontSize: 13, background: 'rgba(255,255,255,0.03)', padding: '4px 12px', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>
-                {user.full_name || user.email || user.phone_number}
+              <span className="mono-tech" style={{ 
+                color: 'var(--neon-mint)', 
+                fontSize: 11, 
+                background: 'rgba(124, 255, 224, 0.05)', 
+                padding: '6px 16px', 
+                borderRadius: '9999px', 
+                border: '1px solid rgba(124, 255, 224, 0.1)',
+                fontWeight: 700
+              }}>
+                {user.email || user.full_name || 'AUTHENTICATED'}
               </span>
-              <button onClick={logout} style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                color: '#ef4444',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                padding: '8px 18px',
-                borderRadius: '9999px',
-                fontSize: 12,
-                cursor: 'pointer',
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
+              <button onClick={logout} className="btn-secondary" style={{
+                padding: '8px 16px',
+                fontSize: 10,
+                borderColor: 'rgba(255, 110, 110, 0.2)',
+                color: 'rgba(255, 110, 110, 0.6)'
               }}>TERMINATE</button>
             </div>
           )}

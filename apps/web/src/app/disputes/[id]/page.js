@@ -237,7 +237,7 @@ export default function DisputeDetailPage({ params }) {
           {dispute.status === 'open' && !isAdmin && (
             <div className="glass-card" style={{ padding: 24, textAlign: 'center' }}>
               <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
-                This dispute is currently being reviewed by a TrustLayer administrator. You will be notified once a resolution is reached.
+                This dispute is currently being reviewed by a CroX administrator. You will be notified once a resolution is reached.
               </p>
             </div>
           )}

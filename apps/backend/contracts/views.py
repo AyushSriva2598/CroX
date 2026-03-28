@@ -34,15 +34,15 @@ def contract_list(request):
         if existing:
             return Response(ContractSerializer(existing).data, status=status.HTTP_200_OK)
 
-    # Find payee if phone provided
+    # Find payee if email provided
     payee = None
-    if data.get('payee_phone'):
-        payee = User.objects.filter(phone_number=data['payee_phone']).first()
+    if data.get('payee_email'):
+        payee = User.objects.filter(email=data['payee_email']).first()
 
     contract = Contract.objects.create(
         payer=request.user,
         payee=payee,
-        payee_phone=data.get('payee_phone', ''),
+        payee_email=data.get('payee_email', ''),
         worker_wallet=data.get('worker_wallet', ''),
         title=data['title'],
         description=data.get('description', ''),

@@ -20,7 +20,7 @@ class Contract(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     payer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contracts_as_payer')
     payee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contracts_as_payee', null=True, blank=True)
-    payee_phone = models.CharField(max_length=15, blank=True, help_text='Phone number of payee if not yet registered')
+    payee_email = models.EmailField(blank=True, help_text='Email of payee if not yet registered')
     worker_wallet = models.CharField(max_length=42, blank=True, help_text='Worker EVM wallet address (0x...)')
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True)

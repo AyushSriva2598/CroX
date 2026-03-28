@@ -7,7 +7,7 @@ def send_sms_otp(phone_number, otp_code):
     Sends an OTP to a phone number. 
     Defines a clear injection point for Twilio or other SMS providers.
     """
-    message = f"Your TrustLayer OTP is: {otp_code}. Valid for 10 minutes."
+    message = f"Your CroX OTP is: {otp_code}. Valid for 10 minutes."
     
     # Check for Twilio Credentials in environment
     account_sid = os.getenv('TWILIO_ACCOUNT_SID')
@@ -39,8 +39,8 @@ def send_email_otp(email_address, otp_code):
     """
     Sends an OTP to an email address using configured SMTP settings.
     """
-    subject = "TrustLayer Access Protocol - Verification Code"
-    message = f"Your TrustLayer verification code is: {otp_code}. \n\nThis code is valid for 10 minutes."
+    subject = "CroX Access Protocol - Verification Code"
+    message = f"Your CroX verification code is: {otp_code}. \n\nThis code is valid for 10 minutes."
     
     # Check if a real email backend is configured (not console)
     is_real_email = os.getenv('EMAIL_HOST') != ''

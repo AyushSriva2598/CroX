@@ -5,8 +5,8 @@ import { sendOTP, verifyOTP, demoOAuthLogin, googleOAuthLogin } from '@/lib/api'
 import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
-  const [step, setStep] = useState('phone'); // 'phone' | 'otp'
-  const [phone, setPhone] = useState('');
+  const [step, setStep] = useState('email'); // 'email' | 'otp'
+  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [otp, setOtp] = useState('');
   const [devOtp, setDevOtp] = useState('');
@@ -34,7 +34,7 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await sendOTP(phone, name);
+      const res = await sendOTP(email, name);
       setDevOtp(res.otp_code_dev_only || '');
       setStep('otp');
     } catch (err) {
@@ -48,7 +48,7 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await verifyOTP(phone, otp);
+      const res = await verifyOTP(email, otp);
       localStorage.setItem('trustlayer_token', res.token);
       localStorage.setItem('trustlayer_user', JSON.stringify(res.user));
       router.push('/dashboard');
@@ -83,75 +83,75 @@ export default function LoginPage() {
       position: 'relative',
       overflow: 'hidden'
     }}>
+      {/* Dynamic Gradients */}
       <div style={{ 
-        position: 'absolute', top: '-20%', left: '-10%', width: '60%', height: '60%', 
-        background: 'radial-gradient(circle, rgba(131, 110, 249, 0.12) 0%, transparent 70%)', 
+        position: 'absolute', top: '-10%', left: '-5%', width: '50%', height: '50%', 
+        background: 'radial-gradient(circle, rgba(124, 255, 224, 0.05) 0%, transparent 70%)', 
         zIndex: 0 
       }} />
       <div style={{ 
-        position: 'absolute', bottom: '-20%', right: '-10%', width: '60%', height: '60%', 
-        background: 'radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 70%)', 
+        position: 'absolute', bottom: '-10%', right: '-5%', width: '50%', height: '50%', 
+        background: 'radial-gradient(circle, rgba(138, 161, 255, 0.05) 0%, transparent 70%)', 
         zIndex: 0 
       }} />
 
       <div className="glass-card" style={{ 
-        padding: '56px 48px', 
+        padding: '64px 48px', 
         width: '100%', 
-        maxWidth: 460, 
+        maxWidth: 480, 
         borderRadius: '32px',
         position: 'relative',
         zIndex: 1,
-        boxShadow: '0 24px 80px rgba(0,0,0,0.4), 0 0 40px rgba(131, 110, 249, 0.1)'
+        border: '1px solid var(--nightline)'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 44 }}>
-          <div className="pixel-logo" style={{
-            fontSize: 32,
-            fontWeight: 900,
-            background: 'var(--accent-primary)',
-            padding: '8px 16px',
-            borderRadius: 12,
-            color: '#fff',
-            display: 'inline-block',
-            marginBottom: 24,
-            boxShadow: '0 10px 30px rgba(131, 110, 249, 0.3)'
-          }}>TL</div>
-          <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, letterSpacing: '-0.04em' }}>
-            TrustLayer <span style={{ color: 'var(--accent-primary)' }}>Ecosystem</span>
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <div style={{
+            width: 48, height: 48, background: 'var(--neon-mint)', borderRadius: '12px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+            fontWeight: 800, fontSize: 13, background: 'rgba(124, 255, 224, 0.1)', color: 'var(--neon-mint)',
+            border: '1px solid rgba(124, 255, 224, 0.2)', overflow: 'hidden'
+          }}>
+            <img src="/crox-logo.jpg" alt="CroX" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.style.display='none'} />
+          </div>
+          
+          <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, letterSpacing: '-0.04em', color: '#fff' }}>
+            Cro<span style={{ color: 'var(--neon-mint)' }}>X</span> Gateway
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 16, lineHeight: 1.5, fontWeight: 500 }}>
-            Secure your digital strategic mandates with<br />AI-verified escrow protocols.
+          <p style={{ color: 'var(--ash-mist)', fontSize: 15, lineHeight: 1.6, fontWeight: 500 }}>
+            Authorize your digital mandates within the<br />CroX ecosystem.
           </p>
         </div>
 
         {error && (
           <div style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
+            background: 'rgba(255, 110, 110, 0.05)',
+            border: '1px solid rgba(255, 110, 110, 0.2)',
             borderRadius: '16px',
             padding: '14px 18px',
-            marginBottom: 28,
+            marginBottom: 32,
             color: 'var(--accent-warning)',
-            fontSize: 14,
-            fontWeight: 500,
+            fontSize: 13,
+            fontWeight: 700,
             display: 'flex',
             alignItems: 'center',
-            gap: 10
+            gap: 12,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
           }}>
-            <span style={{ fontSize: 18 }}>⚠️</span> {error}
+            <span>⚠️</span> {error}
           </div>
         )}
 
-
         <div style={{ position: 'relative' }}>
           {authMode === 'google-only' ? (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 14 }}>
-                Secure gateway restricted to Strategic Identity (Google OAuth)
+            <div style={{ textAlign: 'center', padding: '10px 0' }}>
+              <p style={{ color: 'var(--ash-mist)', marginBottom: 28, fontSize: 13, fontWeight: 600 }}>
+                Secure gateway restricted to Strategic Identity
               </p>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <GoogleLogin
                   onSuccess={handleRealGoogleLogin}
-                  onError={() => setError('Authentication Failed')}
+                  onError={() => setError('AUTHENTICATION FAILED')}
                   disabled={loading}
                   theme="filled_black"
                   shape="pill"
@@ -160,11 +160,11 @@ export default function LoginPage() {
             </div>
           ) : (
             <>
-              {step === 'phone' ? (
+              {step === 'email' ? (
                 <form onSubmit={handleSendOTP}>
-                  <div style={{ marginBottom: 20 }}>
-                    <label style={{ display: 'block', marginBottom: 8, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
-                      Operational Identity (Name)
+                  <div style={{ marginBottom: 24 }}>
+                    <label className="tracked-caps" style={{ display: 'block', marginBottom: 10, color: 'var(--text-muted)' }}>
+                      OPERATIONAL IDENTITY
                     </label>
                     <input
                       className="input-field"
@@ -172,36 +172,36 @@ export default function LoginPage() {
                       placeholder="ENTER FULL NAME"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      style={{ width: '100%' }}
+                      style={{ width: '100%', fontSize: 14 }}
                     />
                   </div>
-                  <div style={{ marginBottom: 32 }}>
-                    <label style={{ display: 'block', marginBottom: 8, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
-                      Settlement Contact (Phone)
+                  <div style={{ marginBottom: 36 }}>
+                    <label className="tracked-caps" style={{ display: 'block', marginBottom: 10, color: 'var(--text-muted)' }}>
+                      STRATEGIC IDENTITY (EMAIL)
                     </label>
                     <input
                       className="input-field"
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      type="email"
+                      placeholder="STRATEGIC@CROX.DEV"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
-                      style={{ width: '100%' }}
+                      style={{ width: '100%', fontSize: 14 }}
                     />
                   </div>
-                  <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', padding: '16px', fontSize: 15, fontWeight: 800 }}>
+                  <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', padding: '18px' }}>
                     {loading ? 'INITIALIZING...' : 'GENERATE ACCESS CODE'}
                   </button>
                   
-                  <div style={{ marginTop: 36, padding: '32px 0 0', borderTop: '1px solid var(--border-color)' }}>
-                    <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', marginBottom: 20, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Strategic SSO
+                  <div style={{ marginTop: 40, padding: '32px 0 0', borderTop: '1px solid var(--nightline)' }}>
+                    <p className="tracked-caps" style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: 24 }}>
+                      OR USE SSO GATEWAY
                     </p>
                     
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
                       <GoogleLogin
                         onSuccess={handleRealGoogleLogin}
-                        onError={() => setError('Authentication Failed')}
+                        onError={() => setError('AUTHENTICATION FAILED')}
                         disabled={loading}
                         theme="filled_black"
                         shape="pill"
@@ -211,16 +211,16 @@ export default function LoginPage() {
                 </form>
               ) : (
                 <form onSubmit={handleVerifyOTP}>
-                  <div style={{ textAlign: 'center', marginBottom: 32 }}>
-                    <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
-                      Validating mandate for <strong style={{ color: 'var(--accent-primary)' }}>{phone}</strong>
+                  <div style={{ textAlign: 'center', marginBottom: 36 }}>
+                    <p style={{ fontSize: 14, color: 'var(--ash-mist)', marginBottom: 8, fontWeight: 600 }}>
+                      Validating mandate for <span style={{ color: 'var(--neon-mint)' }}>{email}</span>
                     </p>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Check your device for the 6-digit access protocol.</p>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>Enter the 6-digit access protocol sent to your email.</p>
                   </div>
 
-                  <div style={{ marginBottom: 32 }}>
-                    <label style={{ display: 'block', marginBottom: 12, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', textAlign: 'center' }}>
-                      Enter Verification Code
+                  <div style={{ marginBottom: 36 }}>
+                    <label className="tracked-caps" style={{ display: 'block', marginBottom: 16, color: 'var(--text-muted)', textAlign: 'center' }}>
+                      Verification Code
                     </label>
                     <input
                       className="input-field mono-tech"
@@ -230,17 +230,25 @@ export default function LoginPage() {
                       onChange={(e) => setOtp(e.target.value)}
                       required
                       maxLength={6}
-                      style={{ width: '100%', fontSize: 32, textAlign: 'center', letterSpacing: 12, padding: '20px 0', color: 'var(--accent-secondary)' }}
+                      style={{ 
+                        width: '100%', fontSize: 32, textAlign: 'center', 
+                        letterSpacing: 12, padding: '24px 0', 
+                        color: 'var(--neon-mint)',
+                        border: '1px solid var(--nightline)'
+                      }}
                     />
                   </div>
-                  <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', padding: '16px', fontSize: 16, fontWeight: 800 }}>
-                    {loading ? 'VERIFYING PROTOCOL...' : 'AUTHORIZE ACCESS'}
+                  <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', padding: '18px' }}>
+                    {loading ? 'VALIDATING...' : 'AUTHORIZE ACCESS'}
                   </button>
                   <button
                     type="button"
-                    className="btn-secondary"
-                    onClick={() => setStep('phone')}
-                    style={{ width: '100%', marginTop: 16, fontSize: 13, fontWeight: 700, border: 'none', background: 'transparent', color: 'var(--text-muted)' }}
+                    onClick={() => setStep('email')}
+                    style={{ 
+                      width: '100%', marginTop: 24, fontSize: 11, fontWeight: 800, 
+                      background: 'transparent', border: 'none', color: 'var(--text-muted)',
+                      textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer' 
+                    }}
                   >
                     ← RE-ENTER IDENTITY
                   </button>
@@ -249,15 +257,15 @@ export default function LoginPage() {
             </>
           )}
 
-          {/* Demo Bypass always visible but subtle */}
-          <div style={{ marginTop: 24, padding: '24px 0 0', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
-            <p className="mono-tech" style={{ textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.2)', marginBottom: 16, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.1em' }}>Development Bypass Protocol</p>
+          {/* Dev Bypass */}
+          <div style={{ marginTop: 32, padding: '32px 0 0', borderTop: '1px solid rgba(255,255,255,0.02)' }}>
+            <p className="mono-tech" style={{ textAlign: 'center', fontSize: 9, color: 'var(--text-muted)', marginBottom: 20, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.15em' }}>DEVELOPMENT BYPASS</p>
             <div style={{ display: 'flex', gap: 12 }}>
               <button 
                 type="button" 
                 className="btn-secondary" 
                 onClick={() => handleDemoLogin('admin')}
-                style={{ flex: 1, fontSize: 11, padding: '10px 0', borderRadius: '9999px', border: '1px solid rgba(131, 110, 249, 0.1)', color: 'rgba(131, 110, 249, 0.6)', fontWeight: 800 }}
+                style={{ flex: 1, fontSize: 10, padding: '12px 0', borderColor: 'rgba(124, 255, 224, 0.1)', color: 'rgba(124, 255, 224, 0.6)' }}
                 disabled={loading}
               >
                 SYNC ADMIN
@@ -266,27 +274,12 @@ export default function LoginPage() {
                 type="button" 
                 className="btn-secondary" 
                 onClick={() => handleDemoLogin('worker')}
-                style={{ flex: 1, fontSize: 11, padding: '10px 0', borderRadius: '9999px', border: '1px solid rgba(168, 85, 247, 0.1)', color: 'rgba(168, 85, 247, 0.6)', fontWeight: 800 }}
+                style={{ flex: 1, fontSize: 10, padding: '12px 0', borderColor: 'rgba(138, 161, 255, 0.1)', color: 'rgba(138, 161, 255, 0.6)' }}
                 disabled={loading}
               >
                 SYNC WORKER
               </button>
             </div>
-            {authMode === 'both' ? (
-              <button 
-                onClick={() => setAuthMode('google-only')}
-                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 10, display: 'block', margin: '16px auto 0', cursor: 'pointer', fontWeight: 700 }}
-              >
-                SWITCH TO GOOGLE-ONLY MODE
-              </button>
-            ) : (
-              <button 
-                onClick={() => setAuthMode('both')}
-                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 10, display: 'block', margin: '16px auto 0', cursor: 'pointer', fontWeight: 700 }}
-              >
-                RESTORE MULTI-MODE AUTH
-              </button>
-            )}
           </div>
         </div>
       </div>
