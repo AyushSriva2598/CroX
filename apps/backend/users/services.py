@@ -1,4 +1,5 @@
 import os
+from django.core.mail import send_mail
 from django.conf import settings
 
 def send_sms_otp(phone_number, otp_code):
@@ -33,3 +34,26 @@ def send_sms_otp(phone_number, otp_code):
     print(f"BODY: {message}")
     print(f"{'-'*74}\n")
     return True
+
+def send_email_otp(email_address, otp_code):
+    """
+    Sends an OTP to an email address using configured SMTP settings.
+    """
+    subject = "TrustLayer Access Protocol - Verification Code"
+    message = f"Your TrustLayer verification code is: {otp_code}. \n\nThis code is valid for 10 minutes."
+    
+    # Check if a real email backend is configured (not console)
+    is_real_email = os.getenv('EMAIL_HOST') != ''
+    
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [email_address],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        print(f"Email Error: {str(e)}")
+        return False

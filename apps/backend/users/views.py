@@ -17,7 +17,7 @@ import os
 
 from .models import User, OTPToken, AuthToken
 from .serializers import SendOTPSerializer, VerifyOTPSerializer, UserSerializer
-from .services import send_sms_otp
+from .services import send_sms_otp, send_email_otp
 
 
 @api_view(['POST'])
@@ -42,12 +42,17 @@ def send_otp(request):
 
     # Send via new service (Twilio-pluggable)
     send_sms_otp(phone, otp_code)
+    
+    # Also try email if user exists and has email
+    user = User.objects.filter(phone_number=phone).first()
+    if user and user.email:
+        send_email_otp(user.email, otp_code)
 
     return Response({
         'message': 'OTP sent successfully',
         'phone_number': phone,
-        # Include OTP in dev mode for easy testing if no Twilio
-        'otp_code_dev_only': otp_code if not os.getenv('TWILIO_ACCOUNT_SID') else None,
+        # Include OTP in dev mode for easy testing if no real transport is configured
+        'otp_code_dev_only': otp_code if not (os.getenv('TWILIO_ACCOUNT_SID') or os.getenv('EMAIL_HOST')) else None,
     }, status=status.HTTP_200_OK)
 
 
