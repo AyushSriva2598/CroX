@@ -223,9 +223,17 @@ export default function ContractDetailPage({ params }) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
               <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em' }}>{contract.title}</h1>
-              <StateBadge state={contract.state} />
+              <motion.div
+                animate={contract.state !== 'completed' ? {
+                  boxShadow: ['0 0 0px rgba(131, 110, 249, 0)', '0 0 15px rgba(131, 110, 249, 0.3)', '0 0 0px rgba(131, 110, 249, 0)']
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{ borderRadius: 9999 }}
+              >
+                <StateBadge state={contract.state} />
+              </motion.div>
             </div>
-            <p className="font-mono" style={{ color: 'var(--text-muted)', fontSize: 13, letterSpacing: '1px', textTransform: 'uppercase' }}>
+            <p className="font-mono" style={{ color: 'var(--text-muted)', fontSize: 12, letterSpacing: '2px', textTransform: 'uppercase' }}>
               PROTOCOL ID // {contract.id}
             </p>
           </div>
@@ -475,20 +483,29 @@ export default function ContractDetailPage({ params }) {
               {escrow ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Locked</span>
-                    <span className="font-mono" style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent-primary)' }}>{parseFloat(escrow.locked).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-primary)' }} />
+                      <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Locked</span>
+                    </div>
+                    <span className="font-mono" style={{ fontSize: 15, fontWeight: 800, color: 'var(--accent-primary)' }}>{parseFloat(escrow.locked).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Released</span>
-                    <span className="font-mono" style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent-success)' }}>{parseFloat(escrow.released).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-success)' }} />
+                      <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Released</span>
+                    </div>
+                    <span className="font-mono" style={{ fontSize: 15, fontWeight: 800, color: 'var(--accent-success)' }}>{parseFloat(escrow.released).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Refunded</span>
-                    <span className="font-mono" style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent-warning)' }}>{parseFloat(escrow.refunded).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-warning)' }} />
+                      <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Refunded</span>
+                    </div>
+                    <span className="font-mono" style={{ fontSize: 15, fontWeight: 800, color: 'var(--accent-warning)' }}>{parseFloat(escrow.refunded).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
                   </div>
-                  <div style={{ borderTop: '1px dashed rgba(131, 110, 249, 0.3)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="font-mono" style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase' }}>Available</span>
-                    <span className="font-mono" style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>{parseFloat(escrow.available).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
+                  <div style={{ borderTop: '1px dashed rgba(131, 110, 249, 0.2)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="font-mono" style={{ fontSize: 13, fontWeight: 900, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Available</span>
+                    <span className="font-mono" style={{ fontSize: 20, fontWeight: 900, color: 'var(--text-primary)' }}>{parseFloat(escrow.available).toLocaleString(undefined, { minimumFractionDigits: 2 })} MON</span>
                   </div>
                 </div>
               ) : (
@@ -546,38 +563,54 @@ export default function ContractDetailPage({ params }) {
                 <p className="font-mono" style={{ color: 'var(--text-muted)', fontSize: 12 }}>No operations logged.</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {auditLog.map((log, i) => (
-                    <div key={i} style={{
-                      padding: '12px', background: 'rgba(18, 18, 28, 0.5)', borderRadius: 10, borderLeft: '3px solid var(--accent-primary)'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span className="font-mono" style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{log.action}</span>
-                        <span className="font-mono" style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                          {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                      {log.old_state && (
-                        <div className="font-mono" style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                          {log.old_state} → {log.new_state}
+                  {auditLog.map((log, i) => {
+                    const actionConfig = {
+                      'create': { icon: '📝', color: 'var(--accent-primary)' },
+                      'accept': { icon: '🤝', color: 'var(--accent-success)' },
+                      'pay': { icon: '💰', color: 'var(--accent-success)' },
+                      'submit_work': { icon: '📦', color: 'var(--accent-secondary)' },
+                      'approve': { icon: '✅', color: 'var(--accent-success)' },
+                      'dispute': { icon: '⚠️', color: 'var(--accent-warning)' },
+                      'cancel': { icon: '🚫', color: 'var(--text-muted)' },
+                    };
+                    const cfg = actionConfig[log.action] || { icon: '⚙️', color: 'var(--accent-primary)' };
+                    
+                    return (
+                      <div key={i} style={{
+                        padding: '12px 16px', background: 'rgba(18, 18, 28, 0.4)', borderRadius: 12, borderLeft: `3px solid ${cfg.color}`
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <span className="font-mono" style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase' }}>
+                            {cfg.icon} {log.action.replace('_', ' ')}
+                          </span>
+                          <span className="font-mono" style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                            {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         </div>
-                      )}
-                      {log.metadata?.tx_hash && (
-                          <div style={{ marginTop: 6 }}>
-                             <a
-                              href={`https://testnet.monadscan.com/tx/${log.metadata.tx_hash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                fontSize: 11, color: 'var(--accent-primary)', textDecoration: 'none',
-                                background: 'rgba(108, 99, 255, 0.1)', padding: '2px 6px', borderRadius: 4, display: 'inline-block'
-                              }}
-                            >
-                              🔗 View TX
-                            </a>
+                        {log.old_state && (
+                          <div className="font-mono" style={{ fontSize: 10, color: 'var(--text-secondary)', opacity: 0.8 }}>
+                            {log.old_state} → {log.new_state}
                           </div>
                         )}
-                    </div>
-                  ))}
+                        {log.metadata?.tx_hash && (
+                            <div style={{ marginTop: 8 }}>
+                               <a
+                                href={`https://testnet.monadscan.com/tx/${log.metadata.tx_hash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontSize: 10, color: 'var(--accent-primary)', textDecoration: 'none',
+                                  background: 'rgba(131, 110, 249, 0.1)', padding: '4px 8px', borderRadius: 6, display: 'inline-block',
+                                  fontWeight: 700, letterSpacing: '0.5px'
+                                }}
+                              >
+                                🔗 VIEW TRANSACTION
+                              </a>
+                            </div>
+                          )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>
