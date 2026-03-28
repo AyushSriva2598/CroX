@@ -51,8 +51,6 @@ def send_otp(request):
     return Response({
         'message': 'OTP sent successfully',
         'phone_number': phone,
-        # Include OTP in dev mode for easy testing if no real transport is configured
-        'otp_code_dev_only': otp_code if not (os.getenv('TWILIO_ACCOUNT_SID') or os.getenv('EMAIL_HOST')) else None,
     }, status=status.HTTP_200_OK)
 
 

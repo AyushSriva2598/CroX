@@ -217,20 +217,6 @@ export default function LoginPage() {
                     </p>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Check your device for the 6-digit access protocol.</p>
                   </div>
-                  
-                  {devOtp && (
-                    <div style={{
-                      background: 'rgba(131, 110, 249, 0.05)',
-                      border: '1px solid rgba(131, 110, 249, 0.2)',
-                      borderRadius: '16px',
-                      padding: '16px',
-                      marginBottom: 24,
-                      textAlign: 'center'
-                    }}>
-                      <p style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, marginBottom: 8, letterSpacing: '0.05em' }}>Injected Auth Token (Dev)</p>
-                      <strong className="mono-tech" style={{ fontSize: 24, letterSpacing: 4, color: 'var(--accent-primary)' }}>{devOtp}</strong>
-                    </div>
-                  )}
 
                   <div style={{ marginBottom: 32 }}>
                     <label style={{ display: 'block', marginBottom: 12, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', textAlign: 'center' }}>
