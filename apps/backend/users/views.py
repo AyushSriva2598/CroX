@@ -46,10 +46,10 @@ def send_otp(request):
 
     try:
         send_mail(
-            subject='Your TrustLayer OTP',
+            subject='Your CroX OTP',
             message=f'Your OTP is: {otp_code}. Valid for 10 minutes.',
-            from_email='noreply@trustlayer.dev',
-            recipient_list=[f'{phone}@trustlayer.dev'],  # placeholder
+            from_email='noreply@crox.dev',
+            recipient_list=[f'{phone}@crox.dev'],  # placeholder
             fail_silently=True,
         )
     except Exception:
@@ -120,17 +120,29 @@ def demo_oauth_login(request):
     if role == 'admin':
         phone = '+10000000000'
         name = 'Demo Admin'
+        user_role = 'admin'
+        is_staff = True
     else:
         phone = '+19999999999'
         name = 'Demo Worker'
+        user_role = 'payee'
+        is_staff = False
         
     user, created = User.objects.get_or_create(
         phone_number=phone,
         defaults={
             'is_verified': True,
-            'full_name': name
+            'full_name': name,
+            'role': user_role,
+            'is_staff': is_staff
         }
     )
+
+    # Ensure role and is_staff are correct even if user already existed
+    if not created:
+        user.role = user_role
+        user.is_staff = is_staff
+        user.save()
     
     # Generate JWT
     refresh = RefreshToken.for_user(user)

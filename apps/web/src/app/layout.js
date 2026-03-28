@@ -2,8 +2,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import "./globals.css";
 
 export const metadata = {
-  title: "TrustLayer — Smart Escrow Platform",
-  description: "UPI-native escrow infrastructure with AI contract analysis and Monad blockchain verification",
+  title: "CroX — Smart Escrow Platform",
+  description: "Smart escrow infrastructure with AI contract analysis and Monad blockchain verification",
 };
 
 export default function RootLayout({ children }) {

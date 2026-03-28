@@ -10,7 +10,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 }
   }
 };
 
@@ -19,7 +19,7 @@ const itemVariants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 24 }
+    transition: { type: 'spring', stiffness: 260, damping: 20 }
   }
 };
 
@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('trustlayer_token');
+    const token = localStorage.getItem('crox_token');
     if (!token) {
       router.push('/login');
       return;
@@ -166,7 +166,7 @@ export default function DashboardPage() {
              <div style={{ fontSize: 64, marginBottom: 24, opacity: 0.8 }}>⚡️</div>
             <h3 style={{ fontSize: 24, marginBottom: 12, fontWeight: 700, letterSpacing: '-0.02em' }}>No Escrows Found</h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: 32, fontSize: 16 }}>
-              {activeTab === 'mine' ? 'Deploy your first milestone-based contract on TrustLayer.' : 'There are currently no open bounties available.'}
+              {activeTab === 'mine' ? 'Deploy your first milestone-based contract on CroX.' : 'There are currently no open bounties available.'}
             </p>
             {activeTab === 'mine' && (
               <motion.button 

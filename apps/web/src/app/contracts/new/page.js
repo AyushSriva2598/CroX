@@ -18,7 +18,7 @@ const itemVariants = {
 
 export default function NewContractPage() {
   const router = useRouter();
-  const hasToken = typeof window !== 'undefined' && localStorage.getItem('trustlayer_token');
+  const hasToken = typeof window !== 'undefined' && localStorage.getItem('crox_token');
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');

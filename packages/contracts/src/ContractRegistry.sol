@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 /**
  * @title ContractRegistry
- * @notice Stores contract hashes on Monad blockchain for TrustLayer escrow verification.
+ * @notice Stores contract hashes on Monad blockchain for CroX escrow verification.
  * @dev Each contract is represented by its SHA-256 hash. Once registered, the hash 
  *      and timestamp are immutably stored on-chain.
  */

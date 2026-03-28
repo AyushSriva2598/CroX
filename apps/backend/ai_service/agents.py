@@ -58,7 +58,7 @@ def _call_agent(client, system_prompt, user_message, agent_name):
 # AGENT 1: Contract Parser
 # ============================================================
 
-PARSER_SYSTEM_PROMPT = """You are a Contract Parser Agent for TrustLayer, a UPI-native escrow platform.
+PARSER_SYSTEM_PROMPT = """You are a Contract Parser Agent for CroX, a UPI-native escrow platform.
 
 Your job is to extract structured contract terms from natural language descriptions.
 
@@ -117,7 +117,7 @@ def parse_contract(text):
 # AGENT 2: Risk Assessment
 # ============================================================
 
-RISK_SYSTEM_PROMPT = """You are a Risk Assessment Agent for TrustLayer, a UPI-native escrow platform.
+RISK_SYSTEM_PROMPT = """You are a Risk Assessment Agent for CroX, a UPI-native escrow platform.
 
 You analyze structured contract terms and identify potential risks and red flags.
 
@@ -186,9 +186,9 @@ def assess_risk(parsed_contract):
 # AGENT 3: Compliance
 # ============================================================
 
-COMPLIANCE_SYSTEM_PROMPT = """You are a Compliance Agent for TrustLayer, a UPI-native escrow platform.
+COMPLIANCE_SYSTEM_PROMPT = """You are a Compliance Agent for CroX, a smart escrow platform.
 
-You review contract terms and risk assessment to ensure the contract can work within TrustLayer's escrow system.
+You review contract terms and risk assessment to ensure the contract can work within CroX's escrow system.
 
 Check for:
 1. Escrow compatibility — can the amounts be properly locked and released?

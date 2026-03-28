@@ -9,16 +9,16 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('trustlayer_token');
-    const userData = localStorage.getItem('trustlayer_user');
+    const token = localStorage.getItem('crox_token');
+    const userData = localStorage.getItem('crox_user');
     if (token && userData) {
       setUser(JSON.parse(userData));
     }
   }, []);
 
   const logout = () => {
-    localStorage.removeItem('trustlayer_token');
-    localStorage.removeItem('trustlayer_user');
+    localStorage.removeItem('crox_token');
+    localStorage.removeItem('crox_user');
     router.push('/login');
   };
 
@@ -59,9 +59,9 @@ export default function Navbar() {
               boxShadow: '0 4px 20px rgba(131, 110, 249, 0.4)'
             }}
           >
-            TL
+            <img src="/crox-logo.png" alt="CroX Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </motion.div>
-          <span style={{ fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>TrustLayer</span>
+          <span style={{ fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>CroX</span>
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>

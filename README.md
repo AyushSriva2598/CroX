@@ -1,6 +1,6 @@
-# TrustLayer MVP
+# CroX MVP
 
-TrustLayer is a UPI-native smart escrow platform powered by Multi-Agent AI and the Monad blockchain. It allows users to convert informal agreements into enforceable financial workflows.
+CroX is a UPI-native smart escrow platform powered by Multi-Agent AI and the Monad blockchain. It allows users to convert informal agreements into enforceable financial workflows.
 
 ## Features
 
