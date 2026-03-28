@@ -9,7 +9,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.1 }
+    transition: { staggerChildren: 0.1, delayChildren: 0.15 }
   }
 };
 
@@ -18,7 +18,7 @@ const itemVariants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 20 }
+    transition: { type: 'spring', stiffness: 300, damping: 24 }
   }
 };
 
@@ -52,8 +52,8 @@ export default function LoginPage() {
     setError('');
     try {
       const res = await verifyOTP(phone, otp);
-      localStorage.setItem('crox_token', res.token);
-      localStorage.setItem('crox_user', JSON.stringify(res.user));
+      localStorage.setItem('trustlayer_token', res.token);
+      localStorage.setItem('trustlayer_user', JSON.stringify(res.user));
       router.push('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -66,8 +66,8 @@ export default function LoginPage() {
     setError('');
     try {
       const res = await demoOAuthLogin(role);
-      localStorage.setItem('crox_token', res.token);
-      localStorage.setItem('crox_user', JSON.stringify(res.user));
+      localStorage.setItem('trustlayer_token', res.token);
+      localStorage.setItem('trustlayer_user', JSON.stringify(res.user));
       router.push('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -80,8 +80,8 @@ export default function LoginPage() {
     setError('');
     try {
       const res = await googleOAuthLogin(credentialResponse.credential);
-      localStorage.setItem('crox_token', res.token);
-      localStorage.setItem('crox_user', JSON.stringify(res.user));
+      localStorage.setItem('trustlayer_token', res.token);
+      localStorage.setItem('trustlayer_user', JSON.stringify(res.user));
       router.push('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -133,7 +133,7 @@ export default function LoginPage() {
               position: 'relative',
             }}
           >
-            <img src="/crox-logo.jpg" alt="CroX Logo" style={{ width: '70%', height: '70%', objectFit: 'contain' }} />
+            <img src="/crox-logo.png" alt="CroX Logo" style={{ width: '70%', height: '70%', objectFit: 'contain' }} />
           </motion.div>
           <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.02em' }}>
             Welcome to <span className="gradient-text">CroX</span>

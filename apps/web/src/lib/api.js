@@ -1,7 +1,7 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 async function request(endpoint, options = {}) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('crox_token') : null;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('trustlayer_token') : null;
   
   const headers = {
     ...options.headers,
@@ -25,8 +25,8 @@ async function request(endpoint, options = {}) {
 
   if (!res.ok) {
     if (res.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('crox_token');
-      localStorage.removeItem('crox_user');
+      localStorage.removeItem('trustlayer_token');
+      localStorage.removeItem('trustlayer_user');
       window.location.href = '/login';
     }
     throw new Error(data.error || data.detail || JSON.stringify(data));

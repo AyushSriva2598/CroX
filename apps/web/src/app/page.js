@@ -7,16 +7,16 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.1 }
+    transition: { staggerChildren: 0.15, delayChildren: 0.2 }
   }
 };
 
 const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
+  hidden: { y: 30, opacity: 0 },
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 20 }
+    transition: { type: 'spring', stiffness: 300, damping: 24 }
   }
 };
 
@@ -31,7 +31,7 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('crox_token');
+    const token = localStorage.getItem('trustlayer_token');
     if (token) {
       router.push('/dashboard');
     }
@@ -97,7 +97,7 @@ export default function HomePage() {
               position: 'relative',
             }}
           >
-            <img src="/crox-logo.jpg" alt="CroX Logo" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
+            <img src="/crox-logo.png" alt="CroX Logo" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
             {/* Glow ring */}
             <motion.div
               animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}

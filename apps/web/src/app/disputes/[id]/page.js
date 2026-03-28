@@ -20,7 +20,7 @@ const itemVariants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 20 }
+    transition: { type: 'spring', stiffness: 300, damping: 24 }
   }
 };
 
@@ -39,8 +39,8 @@ export default function DisputeDetailPage({ params }) {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('crox_token');
-    const userData = localStorage.getItem('crox_user');
+    const token = localStorage.getItem('trustlayer_token');
+    const userData = localStorage.getItem('trustlayer_user');
     if (!token || !userData) { router.push('/login'); return; }
     setUser(JSON.parse(userData));
     fetchDispute(token);
@@ -70,7 +70,7 @@ export default function DisputeDetailPage({ params }) {
         release_amount: resolutionType === 'partial_split' ? releaseAmt : 0,
         refund_amount: resolutionType === 'partial_split' ? refundAmt : 0,
       });
-      await fetchDispute(localStorage.getItem('crox_token'));
+      await fetchDispute(localStorage.getItem('trustlayer_token'));
     } catch (err) {
       setError(err.message);
     }
@@ -153,28 +153,20 @@ export default function DisputeDetailPage({ params }) {
           </div>
 
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ 
-              scale: 1, 
-              opacity: 1,
-              boxShadow: dispute.status === 'open' ? ['0 0 10px rgba(255, 179, 71, 0)', '0 0 20px rgba(255, 179, 71, 0.3)', '0 0 10px rgba(255, 179, 71, 0)'] : 'none',
-            }}
-            transition={{ 
-              scale: { type: 'spring', stiffness: 300, damping: 20 },
-              boxShadow: { duration: 2, repeat: Infinity }
-            }}
+            animate={dispute.status === 'open' ? {
+              boxShadow: ['0 0 10px rgba(255, 179, 71, 0)', '0 0 20px rgba(255, 179, 71, 0.3)', '0 0 10px rgba(255, 179, 71, 0)'],
+            } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
             style={{
-              padding: '10px 24px', borderRadius: 9999, fontSize: 13, fontWeight: 800,
-              background: dispute.status === 'open' ? 'rgba(255, 179, 71, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+              padding: '8px 20px', borderRadius: 9999, fontSize: 12, fontWeight: 800,
+              background: dispute.status === 'open' ? 'rgba(255, 179, 71, 0.15)' : 'rgba(16, 185, 129, 0.15)',
               color: dispute.status === 'open' ? 'var(--accent-amber)' : 'var(--accent-success)',
-              textTransform: 'uppercase', letterSpacing: '1.5px',
+              textTransform: 'uppercase', letterSpacing: '1px',
               fontFamily: "'JetBrains Mono', monospace",
-              border: `1px solid ${dispute.status === 'open' ? 'rgba(255, 179, 71, 0.25)' : 'rgba(16, 185, 129, 0.25)'}`,
-              display: 'flex', alignItems: 'center', gap: 8
+              border: `1px solid ${dispute.status === 'open' ? 'rgba(255, 179, 71, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
             }}
           >
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'currentColor' }} />
-            {dispute.status}
+            ● {dispute.status}
           </motion.div>
         </motion.div>
 
@@ -289,17 +281,14 @@ export default function DisputeDetailPage({ params }) {
                 }}
               >
                 <div style={{
-                  position: 'absolute', top: 0, right: 0, width: '60%', height: '100%',
-                  background: 'radial-gradient(circle at top right, rgba(131, 110, 249, 0.12) 0%, transparent 70%)',
+                  position: 'absolute', top: 0, right: 0, width: '50%', height: '100%',
+                  background: 'radial-gradient(circle at top right, rgba(131, 110, 249, 0.08) 0%, transparent 60%)',
                   pointerEvents: 'none',
                 }} />
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🛠</div>
-                  <h3 className="font-mono" style={{ fontSize: 13, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>
-                    Admin Resolution Terminal
-                  </h3>
-                </div>
+                <h3 className="font-mono" style={{ fontSize: 12, fontWeight: 700, marginBottom: 24, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>
+                  🛠 Admin Resolution Panel
+                </h3>
 
                 <div style={{ marginBottom: 20 }}>
                   <label className="font-mono" style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '1px' }}>

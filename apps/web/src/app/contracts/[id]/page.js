@@ -10,19 +10,12 @@ import { sendMON, registerContractOnChain as walletRegisterOnChain, getConnected
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.1 }
-  }
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 20 }
-  }
+  visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
 };
 
 export default function ContractDetailPage({ params }) {
@@ -42,8 +35,8 @@ export default function ContractDetailPage({ params }) {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('crox_token');
-    const userStr = localStorage.getItem('crox_user');
+    const token = localStorage.getItem('trustlayer_token');
+    const userStr = localStorage.getItem('trustlayer_user');
     if (!token) { router.push('/login'); return; }
     if (userStr) setUser(JSON.parse(userStr));
     fetchData();
