@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { connectWallet, getConnectedAddress } from '@/lib/wallet';
 
 export default function WalletButton() {
@@ -40,43 +39,35 @@ export default function WalletButton() {
 
   if (address) {
     return (
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 16px', borderRadius: 9999,
-        background: 'rgba(16, 185, 129, 0.1)',
-        border: '1px solid rgba(16, 185, 129, 0.3)',
-      }}>
         <div style={{
-          width: 8, height: 8, borderRadius: '50%',
-          background: 'var(--accent-success)',
-          boxShadow: '0 0 10px var(--accent-success)'
-        }} />
-        <span className="font-mono" style={{ color: 'var(--accent-success)', fontSize: 13, fontWeight: 700, letterSpacing: '0.5px' }}>
-          {truncate(address)}
-        </span>
-      </div>
+          padding: '8px 16px', borderRadius: '9999px',
+          background: 'rgba(131, 110, 249, 0.1)',
+          border: '1px solid var(--glass-border)',
+          fontSize: 13, fontWeight: 700,
+          display: 'flex', alignItems: 'center', gap: 10,
+          color: 'var(--accent-primary)'
+        }}>
+          <div style={{
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'var(--accent-primary)',
+            boxShadow: '0 0 10px var(--accent-primary)'
+          }} />
+          <span className="mono-tech">{truncate(address)}</span>
+        </div>
     );
   }
 
   return (
-    <div>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+      <button
         onClick={handleConnect}
         disabled={connecting}
-        style={{
-          padding: '10px 20px', borderRadius: 9999,
-          background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-          color: 'white', border: 'none', cursor: 'pointer',
-          fontSize: 13, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
-          opacity: connecting ? 0.7 : 1,
-          boxShadow: '0 4px 15px rgba(131, 110, 249, 0.4)'
-        }}
+        className="btn-primary"
+        style={{ padding: '12px 28px', fontSize: 14, fontWeight: 800, borderRadius: '9999px', letterSpacing: '0.02em' }}
       >
-        {connecting ? 'SYNCING...' : '🔗 CONNECT WALLET'}
-      </motion.button>
-      {error && <p className="font-mono" style={{ color: 'var(--accent-warning)', fontSize: 11, marginTop: 8, textAlign: 'right' }}>{error}</p>}
+        {connecting ? '⏳ SYNCING...' : 'CONNECT WALLET'}
+      </button>
+      {error && <p className="mono-tech" style={{ color: 'var(--accent-warning)', fontSize: 11, marginTop: 8 }}>{error}</p>}
     </div>
   );
 }

@@ -2,35 +2,38 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('crox_token');
-    const userData = localStorage.getItem('crox_user');
+    const token = localStorage.getItem('trustlayer_token');
+    const userData = localStorage.getItem('trustlayer_user');
     if (token && userData) {
       setUser(JSON.parse(userData));
     }
   }, []);
 
   const logout = () => {
-    localStorage.removeItem('crox_token');
-    localStorage.removeItem('crox_user');
+    localStorage.removeItem('trustlayer_token');
+    localStorage.removeItem('trustlayer_user');
     router.push('/login');
   };
 
   return (
     <nav style={{
       position: 'sticky',
-      top: 0,
+      top: 12,
+      left: 24,
+      right: 24,
       zIndex: 50,
-      background: 'rgba(5, 5, 10, 0.65)',
+      background: 'rgba(11, 11, 15, 0.7)',
       backdropFilter: 'blur(32px)',
       WebkitBackdropFilter: 'blur(32px)',
-      borderBottom: '1px solid var(--border-color)',
+      border: '1px solid var(--glass-border)',
+      borderRadius: '24px',
+      margin: '0 24px',
       padding: '0 24px',
     }}>
       <div style={{
@@ -39,62 +42,43 @@ export default function Navbar() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        height: 72,
+        height: 64,
       }}>
         <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <motion.div
-            whileHover={{ rotate: 180, scale: 1.1 }}
-            transition={{ duration: 0.5, type: "spring" }}
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: 18,
-              color: 'white',
-              boxShadow: '0 4px 20px rgba(131, 110, 249, 0.4)'
-            }}
-          >
-            <img src="/crox-logo.jpg" alt="CroX Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-          </motion.div>
-          <span style={{ fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>CroX</span>
+          <div className="pixel-logo" style={{
+            fontSize: 24,
+            fontWeight: 900,
+            background: 'var(--accent-primary)',
+            padding: '4px 10px',
+            borderRadius: 8,
+            color: '#fff'
+          }}>TL</div>
+          <span style={{ fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>TrustLayer</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          <Link href="/dashboard" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: 15, fontWeight: 600, transition: 'color 0.2s' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <Link href="/dashboard" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
             Dashboard
           </Link>
-          <Link href="/contracts/new" className="btn-primary" style={{ textDecoration: 'none', fontSize: 14 }}>
-            + New Contract
+          <Link href="/contracts/new" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
+            New Contract
           </Link>
-          {user ? (
+          {user && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span className="font-mono" style={{ color: 'var(--text-secondary)', fontSize: 13, background: 'rgba(131, 110, 249, 0.1)', padding: '6px 14px', borderRadius: 9999 }}>
-                {user.phone_number}
-              </span>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={logout} 
-                className="btn-secondary" 
-                style={{ padding: '8px 20px', fontSize: 13 }}
-              >
-                Logout
-              </motion.button>
+              <span className="mono-tech" style={{ color: 'var(--text-muted)', fontSize: 13, background: 'rgba(255,255,255,0.03)', padding: '4px 12px', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>{user.phone_number}</span>
+              <button onClick={logout} style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                color: '#ef4444',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                fontSize: 12,
+                cursor: 'pointer',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>TERMINATE</button>
             </div>
-          ) : (
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => router.push('/login')} 
-              className="btn-secondary"
-            >
-              Log In
-            </motion.button>
           )}
         </div>
       </div>

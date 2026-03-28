@@ -1,24 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import WalletButton from '@/components/WalletButton';
 import { createContract, parseContractAI, parseContractDemo } from '@/lib/api';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
-};
-
 export default function NewContractPage() {
   const router = useRouter();
-  const hasToken = typeof window !== 'undefined' && localStorage.getItem('crox_token');
+  const hasToken = typeof window !== 'undefined' && localStorage.getItem('trustlayer_token');
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -29,6 +18,7 @@ export default function NewContractPage() {
   const [error, setError] = useState('');
   const [aiDone, setAiDone] = useState(false);
 
+  // Use backend AI to auto-generate milestones from description
   const handleAISuggest = async () => {
     if (!description || !totalAmount) {
       setError('Please fill in description and amount first.');
@@ -47,6 +37,7 @@ export default function NewContractPage() {
           amount: parseFloat(m.amount) || parseFloat(totalAmount) / result.final_contract.milestones.length,
         })));
       } else {
+        // Default: split evenly into 2 milestones
         const half = parseFloat(totalAmount) / 2;
         setMilestones([
           { name: 'Initial Delivery', amount: half },
@@ -55,6 +46,7 @@ export default function NewContractPage() {
       }
       setAiDone(true);
     } catch (err) {
+      // Fallback: just split evenly
       const half = parseFloat(totalAmount) / 2;
       setMilestones([
         { name: 'Initial Delivery', amount: half },
@@ -101,173 +93,185 @@ export default function NewContractPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'transparent' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, right: 0, width: '100%', height: '100%', background: 'radial-gradient(circle at 90% 10%, rgba(131, 110, 249, 0.05) 0%, transparent 60%)', zIndex: 0 }} />
       <Navbar />
-      <motion.main 
-        variants={containerVariants} initial="hidden" animate="visible"
-        style={{ maxWidth: 700, margin: '0 auto', padding: '48px 24px' }}
-      >
-        <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
+      <main style={{ maxWidth: 840, margin: '0 auto', padding: '64px 24px', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, gap: 24 }}>
           <div>
-            <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.03em' }}>
-              Launch <span className="gradient-text">Escrow</span>
+            <div className="badge-active" style={{ fontSize: 11, padding: '4px 12px', borderRadius: '9999px', width: 'fit-content', marginBottom: 16, fontWeight: 800 }}>PROVENANCE PROTOCOL</div>
+            <h1 style={{ fontSize: 40, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.04em' }}>
+              Initialize <span style={{ color: 'var(--accent-primary)' }}>Mandate</span>
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>
-              Define terms securely and let AI map your delivery phasing.
+            <p style={{ color: 'var(--text-secondary)', fontSize: 16, fontWeight: 500 }}>
+              Define strategic outcomes. AI will architect the milestone sequence.
             </p>
           </div>
           <WalletButton />
-        </motion.div>
+        </div>
 
-        <AnimatePresence>
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              style={{
-                background: 'rgba(255, 82, 82, 0.1)', border: '1px solid rgba(255, 82, 82, 0.3)',
-                borderRadius: 16, padding: '16px 20px', marginBottom: 24,
-                color: 'var(--accent-warning)', fontSize: 14, fontWeight: 600
-              }}
-            >
-              ⚠️ {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {error && (
+          <div style={{
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: '16px', padding: '16px 20px', marginBottom: 32,
+            color: 'var(--accent-warning)', fontSize: 14, fontWeight: 600,
+            display: 'flex', alignItems: 'center', gap: 12
+          }}>
+            <span style={{ fontSize: 20 }}>⚠️</span> {error}
+          </div>
+        )}
 
         {/* Form */}
-        <motion.div variants={itemVariants} className="glass-card" style={{ padding: 32, marginBottom: 24 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {/* Form */}
+        <div className="glass-card" style={{ padding: 40, marginBottom: 32, borderRadius: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+            {/* Title */}
             <div>
-              <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 8, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Contract Title
+              <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', display: 'block' }}>
+                Strategic Identifier (Title)
               </label>
               <input
                 className="input-field"
-                placeholder="e.g. Next.js Protocol Dashboard"
+                placeholder="E.G. NEXUS PROTOCOL CORE INFRASTRUCTURE"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                style={{ fontSize: 18, fontWeight: 600 }}
               />
             </div>
 
+            {/* Description */}
             <div>
-              <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 8, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Scope of Work
+              <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', display: 'block' }}>
+                Mandate Scope (Description)
               </label>
               <textarea
                 className="textarea-field"
-                placeholder="Describe the deliverables..."
+                placeholder="Define the primary objectives and success conditions..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                style={{ minHeight: 120 }}
+                style={{ minHeight: 140, fontSize: 16, lineHeight: 1.6 }}
               />
             </div>
 
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 8, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Total Treasury (MON)
-              </label>
-              <input
-                className="input-field font-mono"
-                type="number" step="0.01" min="0.001"
-                placeholder="0.00"
-                value={totalAmount}
-                onChange={(e) => setTotalAmount(e.target.value)}
-                style={{ fontSize: 20, fontWeight: 700, color: 'var(--accent-primary)' }}
-              />
+            {/* Amount */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
+              <div>
+                <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', display: 'block' }}>
+                  Total Settlement Value (MON)
+                </label>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input
+                    className="input-field"
+                    type="number"
+                    step="0.01"
+                    min="0.001"
+                    placeholder="0.00"
+                    value={totalAmount}
+                    onChange={(e) => setTotalAmount(e.target.value)}
+                    style={{ fontSize: 24, fontWeight: 900, color: 'var(--accent-primary)', paddingRight: 80 }}
+                  />
+                  <span className="mono-tech" style={{ position: 'absolute', right: 24, fontSize: 14, fontWeight: 800, color: 'var(--text-muted)' }}>MON</span>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* AI Milestones */}
-        <motion.div variants={itemVariants} className="glass-card" style={{ padding: 32, marginBottom: 32 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em' }}>Project Phasing</h3>
+        {/* AI Milestone Suggestion */}
+        {/* AI Milestone Suggestion */}
+        <div className="glass-card" style={{ padding: 40, marginBottom: 48, borderRadius: '32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em' }}>🗺 Strategic Milestones</h3>
             {!aiDone && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={handleAISuggest}
                 className="btn-primary"
                 disabled={aiLoading}
-                style={{ fontSize: 13, padding: '10px 20px', background: 'linear-gradient(135deg, var(--accent-secondary), #836EF9)' }}
+                style={{ fontSize: 13, padding: '10px 24px' }}
               >
-                {aiLoading ? '✨ Analyzing...' : '✨ Auto-Generate Protocol Phases'}
-              </motion.button>
+                {aiLoading ? '✨ PROCESSING ARCHITECTURE...' : '✨ SUGGEST WITH AI'}
+              </button>
             )}
           </div>
 
           {milestones.length > 0 ? (
-            <motion.div variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <AnimatePresence>
-                {milestones.map((m, i) => (
-                  <motion.div key={i} 
-                    variants={itemVariants}
-                    exit={{ opacity: 0, x: -20 }}
-                    style={{
-                      display: 'flex', gap: 12, alignItems: 'center',
-                      padding: '16px', background: 'rgba(18, 18, 28, 0.4)', borderRadius: 16, border: '1px solid rgba(131, 110, 249, 0.1)'
-                    }}
-                  >
-                    <div style={{ 
-                      background: 'var(--accent-primary)', width: 28, height: 28, borderRadius: '50%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 12
-                    }}>
-                      {i + 1}
-                    </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {milestones.map((m, i) => (
+                <div key={i} className="animate-slide-in" style={{
+                  display: 'flex', gap: 16, alignItems: 'center',
+                  padding: '16px 24px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px',
+                  border: '1px solid var(--border-color)',
+                  animationDelay: `${i * 0.1}s`
+                }}>
+                  <div style={{ 
+                    width: 32, height: 32, borderRadius: '50%', background: 'var(--accent-primary)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    fontSize: 14, fontWeight: 800, color: '#fff'
+                  }}>{i + 1}</div>
+                  <input
+                    className="input-field"
+                    value={m.name}
+                    onChange={(e) => updateMilestone(i, 'name', e.target.value)}
+                    style={{ flex: 1, background: 'transparent', border: 'none', padding: 0, fontSize: 16, fontWeight: 600 }}
+                    placeholder="Milestone Objective"
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <input
                       className="input-field"
-                      value={m.name}
-                      onChange={(e) => updateMilestone(i, 'name', e.target.value)}
-                      style={{ flex: 1, border: 'none', background: 'transparent', padding: '8px 0' }}
-                      placeholder="Phase name"
-                    />
-                    <input
-                      className="input-field font-mono"
-                      type="number" step="0.01"
+                      type="number"
+                      step="0.01"
                       value={m.amount}
                       onChange={(e) => updateMilestone(i, 'amount', parseFloat(e.target.value) || 0)}
-                      style={{ width: 120, border: 'none', background: 'rgba(5, 5, 10, 0.5)', textAlign: 'right', fontWeight: 700, color: 'var(--accent-secondary)' }}
+                      style={{ width: 100, textAlign: 'right', fontWeight: 800, color: 'var(--accent-secondary)' }}
                     />
-                    <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)' }}>MON</span>
-                    <button
-                      onClick={() => removeMilestone(i)}
-                      style={{ background: 'none', border: 'none', color: 'var(--accent-warning)', cursor: 'pointer', fontSize: 16, padding: '0 8px' }}
-                    >✕</button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              <button onClick={addMilestone} className="btn-secondary" style={{ marginTop: 12 }}>
-                + Add Phase Line
+                    <span className="mono-tech" style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>MON</span>
+                  </div>
+                  <button
+                    onClick={() => removeMilestone(i)}
+                    style={{ background: 'rgba(239, 68, 68, 0.1)', border: 'none', color: '#ef4444', cursor: 'pointer', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800 }}
+                  >✕</button>
+                </div>
+              ))}
+              <button onClick={addMilestone} style={{
+                background: 'transparent', border: '2px dashed var(--border-color)',
+                borderRadius: '16px', padding: 16, color: 'var(--text-muted)',
+                cursor: 'pointer', fontSize: 14, fontWeight: 700, transition: 'all 0.2s ease',
+                marginTop: 8
+              }}
+              onMouseOver={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
+              onMouseOut={(e) => e.target.style.borderColor = 'var(--border-color)'}
+              >
+                + ADD MANUAL MILESTONE
               </button>
-            </motion.div>
+            </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '40px 20px', background: 'rgba(18, 18, 28, 0.3)', borderRadius: 16, border: '1px dashed rgba(131, 110, 249, 0.2)' }}>
-              <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 20 }}>
-                Describe your requirements and budget above, then use our AI engine to automatically structure the perfect payout milestones.
+            <div style={{ textAlign: 'center', padding: '40px 20px', border: '2px dashed var(--border-color)', borderRadius: '24px' }}>
+              <p style={{ fontSize: 16, color: 'var(--text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
+                Quantify the mandate scope and amount, then use the AI agent to generate<br/>a strategic milestone sequence automatically.
               </p>
-              <button onClick={addMilestone} className="btn-secondary">
-                Or Configure Manually
+              <button onClick={addMilestone} style={{
+                background: 'rgba(131, 110, 249, 0.05)', border: '1px solid rgba(131, 110, 249, 0.2)',
+                borderRadius: '9999px', padding: '12px 28px', color: 'var(--accent-primary)',
+                cursor: 'pointer', fontSize: 14, fontWeight: 800
+              }}>
+                OR ARCHITECT MANUALLY
               </button>
             </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Create Button */}
-        <motion.div variants={itemVariants}>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleCreate}
-            className="btn-success"
-            disabled={loading || !title || !totalAmount}
-            style={{ width: '100%', fontSize: 18, padding: '18px 0', letterSpacing: '0.5px' }}
-          >
-            {loading ? 'DEPLOYING ESCROW...' : 'SIGN & DEPLOY CONTRACT'}
-          </motion.button>
-        </motion.div>
-      </motion.main>
+        {/* Create Button */}
+        <button
+          onClick={handleCreate}
+          className="btn-primary"
+          disabled={loading || !title || !totalAmount}
+          style={{ width: '100%', fontSize: 18, padding: '20px 0', fontWeight: 800, boxShadow: '0 20px 40px rgba(131, 110, 249, 0.2)' }}
+        >
+          {loading ? '🚀 INITIALIZING Mandate...' : '🚀 DEPLOY PROTOCOL'}
+        </button>
+      </main>
     </div>
   );
 }

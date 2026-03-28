@@ -1,32 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import StateBadge from '@/components/StateBadge';
 import { listContracts, listAvailableContracts } from '@/lib/api';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 24 }
-  }
-};
-
 export default function DashboardPage() {
   const [contracts, setContracts] = useState([]);
   const [availableContracts, setAvailableContracts] = useState([]);
-  const [activeTab, setActiveTab] = useState('mine');
+  const [activeTab, setActiveTab] = useState('mine'); // 'mine' or 'available'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -62,193 +44,166 @@ export default function DashboardPage() {
   };
 
   const totalValue = contracts.reduce((sum, c) => sum + parseFloat(c.total_amount || 0), 0);
+  
   const displayedContracts = activeTab === 'mine' ? contracts : availableContracts;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'transparent' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', position: 'relative', overflowX: 'hidden' }}>
+      <div style={{ 
+        position: 'absolute', top: '-10%', left: '-10%', width: '40%', height: '40%', 
+        background: 'radial-gradient(circle, rgba(131, 110, 249, 0.1) 0%, transparent 70%)', 
+        zIndex: 0, pointerEvents: 'none' 
+      }} />
       <Navbar />
-      
-      <motion.main 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px' }}
-      >
-        <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 48 }}>
+      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
           <div>
-            <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.03em' }}>Dashboard</h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>Manage your escrow contracts securely on Monad.</p>
+            <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.03em' }}>Dashboard</h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>Manage your secure escrow ecosystem</p>
           </div>
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => router.push('/contracts/new')} 
-            className="btn-primary"
-            style={{ padding: '14px 32px' }}
-          >
-            + Create Escrow
-          </motion.button>
-        </motion.div>
+          <button onClick={() => router.push('/contracts/new')} className="btn-primary" style={{ padding: '14px 28px' }}>
+            <span style={{ fontSize: 20, lineHeight: 1 }}>+</span> New Contract
+          </button>
+        </div>
 
         {/* Stats */}
-        <motion.div variants={itemVariants} style={{
+        <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 24,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: 20,
           marginBottom: 48,
         }}>
           {[
-            { label: 'My Contracts', value: stats.total, color: 'var(--accent-primary)', icon: '📁' },
-            { label: 'Active', value: stats.active, color: 'var(--accent-secondary)', icon: '⚡' },
-            { label: 'Available Work', value: stats.available, color: 'var(--accent-success)', icon: '🎯' },
-            { label: 'Total Value', value: `MON ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`, color: 'var(--accent-amber)', icon: '💰' },
+            { label: 'Active Contracts', value: stats.total, color: 'var(--accent-primary)' },
+            { label: 'In Progress', value: stats.active, color: 'var(--accent-secondary)' },
+            { label: 'Marketplace', value: stats.available, color: 'var(--accent-blue)' },
+            { label: 'Escrowed Value', value: totalValue.toFixed(2), color: 'var(--accent-success)', isMon: true },
           ].map((s, i) => (
-            <motion.div 
-              key={i} 
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="glass-card" 
-              style={{ padding: '28px 24px', position: 'relative', overflow: 'hidden' }}
-            >
-              <div style={{
-                position: 'absolute', top: 0, right: 0, width: 120, height: 120,
-                background: `radial-gradient(circle, ${s.color}25 0%, transparent 70%)`,
-                transform: 'translate(30%, -30%)'
-              }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>{s.label}</p>
-                <span style={{ fontSize: 24 }}>{s.icon}</span>
+            <div key={i} className="glass-card" style={{ padding: '28px', borderRadius: '32px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.1em' }}>{s.label}</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                {s.isMon && <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-muted)' }}>MON</span>}
+                <p className={s.isMon ? "mono-tech" : ""} style={{ fontSize: 36, fontWeight: 800, color: s.color, letterSpacing: '-0.02em' }}>{s.value}</p>
               </div>
-              <p className="font-mono" style={{ fontSize: 32, fontWeight: 800, color: s.color, letterSpacing: '-1px' }}>{s.value}</p>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Tabs */}
-        <motion.div variants={itemVariants} style={{ display: 'flex', gap: 16, marginBottom: 32, paddingBottom: 16, position: 'relative' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 32, background: 'rgba(255,255,255,0.03)', padding: 6, borderRadius: '9999px', width: 'fit-content', border: '1px solid var(--border-color)' }}>
           <button
             onClick={() => setActiveTab('mine')}
             style={{
-              background: 'none', border: 'none', fontSize: 16, fontWeight: activeTab === 'mine' ? 700 : 600,
-              color: activeTab === 'mine' ? 'var(--text-primary)' : 'var(--text-muted)',
-              cursor: 'pointer', padding: '12px 24px', borderRadius: 9999,
-              backgroundColor: activeTab === 'mine' ? 'rgba(131, 110, 249, 0.15)' : 'transparent',
+              background: activeTab === 'mine' ? 'var(--accent-primary)' : 'transparent',
+              border: 'none',
+              fontSize: 14,
+              fontWeight: 700,
+              color: activeTab === 'mine' ? 'white' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              padding: '10px 24px',
+              borderRadius: '9999px',
               transition: 'all 0.3s ease'
             }}
           >
-            My Contracts
+            My Ecosystem
           </button>
           <button
             onClick={() => setActiveTab('available')}
             style={{
-              background: 'none', border: 'none', fontSize: 16, fontWeight: activeTab === 'available' ? 700 : 600,
-              color: activeTab === 'available' ? 'var(--text-primary)' : 'var(--text-muted)',
-              cursor: 'pointer', padding: '12px 24px', borderRadius: 9999,
-              backgroundColor: activeTab === 'available' ? 'rgba(131, 110, 249, 0.15)' : 'transparent',
-              transition: 'all 0.3s ease'
+              background: activeTab === 'available' ? 'var(--accent-primary)' : 'transparent',
+              border: 'none',
+              fontSize: 14,
+              fontWeight: 700,
+              color: activeTab === 'available' ? 'white' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              padding: '10px 24px',
+              borderRadius: '9999px',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
             }}
           >
-            Available Work 
-            <span className="font-mono" style={{ background: 'var(--accent-primary)', color: 'white', padding: '2px 10px', borderRadius: 9999, fontSize: 12, marginLeft: 12 }}>
-              {availableContracts.length}
-            </span>
+            Marketplace
+            <span style={{ 
+              background: activeTab === 'available' ? 'rgba(255,255,255,0.2)' : 'var(--accent-primary)', 
+              color: 'white', 
+              padding: '2px 8px', 
+              borderRadius: '9999px', 
+              fontSize: 11 
+            }}>{availableContracts.length}</span>
           </button>
-        </motion.div>
+        </div>
 
         {/* Contracts list */}
         {loading ? (
-          <motion.div variants={itemVariants} style={{ textAlign: 'center', padding: '80px 0' }}>
-            <div className="spinner" style={{ margin: '0 auto 24px' }}></div>
-            <p className="font-mono" style={{ color: 'var(--accent-primary)', letterSpacing: '2px', textTransform: 'uppercase', fontSize: 12 }}>Initializing Node...</p>
-          </motion.div>
+          <div style={{ textAlign: 'center', padding: 60 }}>
+            <div className="spinner" style={{ margin: '0 auto 16px' }}></div>
+            <p style={{ color: 'var(--text-muted)' }}>Loading contracts...</p>
+          </div>
         ) : error ? (
-          <motion.div variants={itemVariants} className="glass-card" style={{ padding: 40, textAlign: 'center', border: '1px solid rgba(255, 82, 82, 0.3)' }}>
-            <p style={{ color: 'var(--accent-warning)', fontWeight: 600 }}>{error}</p>
-          </motion.div>
+          <div className="glass-card" style={{ padding: 40, textAlign: 'center' }}>
+            <p style={{ color: 'var(--accent-warning)' }}>{error}</p>
+          </div>
         ) : displayedContracts.length === 0 ? (
-          <motion.div variants={itemVariants} className="glass-card" style={{ padding: '80px 20px', textAlign: 'center' }}>
-             <div style={{ fontSize: 64, marginBottom: 24, opacity: 0.8 }}>⚡️</div>
-            <h3 style={{ fontSize: 24, marginBottom: 12, fontWeight: 700, letterSpacing: '-0.02em' }}>No Escrows Found</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: 32, fontSize: 16 }}>
-              {activeTab === 'mine' ? 'Deploy your first milestone-based contract on CroX.' : 'There are currently no open bounties available.'}
+          <div className="glass-card" style={{ padding: 60, textAlign: 'center' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
+            <h3 style={{ fontSize: 18, marginBottom: 8, fontWeight: 600 }}>No contracts found</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>
+              {activeTab === 'mine' ? 'Create your first escrow contract with AI assistance' : 'There are currently no available contracts looking for a worker.'}
             </p>
             {activeTab === 'mine' && (
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push('/contracts/new')} 
-                className="btn-primary"
-              >
-                Launch Contract
-              </motion.button>
+              <button onClick={() => router.push('/contracts/new')} className="btn-primary">
+                Create Contract
+              </button>
             )}
-          </motion.div>
+          </div>
         ) : (
-          <motion.div variants={containerVariants} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <AnimatePresence>
-              {displayedContracts.map(contract => (
-                <motion.div
-                  key={contract.id}
-                  variants={itemVariants}
-                  whileHover={{ 
-                    scale: 1.01, 
-                    x: 5,
-                    boxShadow: `0 10px 40px ${
-                      contract.state === 'completed' ? 'rgba(16, 185, 129, 0.15)' :
-                      contract.state === 'disputed' ? 'rgba(255, 82, 82, 0.15)' :
-                      'rgba(131, 110, 249, 0.15)'
-                    }`
-                  }}
-                  className="glass-card"
-                  style={{ 
-                    padding: '28px 32px', 
-                    cursor: 'pointer', 
-                    position: 'relative', 
-                    overflow: 'hidden',
-                    borderLeft: `4px solid ${
-                      contract.state === 'completed' ? 'var(--accent-success)' :
-                      contract.state === 'disputed' ? 'var(--accent-warning)' :
-                      'transparent'
-                    }`
-                  }}
-                  onClick={() => router.push(`/contracts/${contract.id}`)}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-                        <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em' }}>{contract.title}</h3>
-                        <StateBadge state={contract.state} />
-                        {contract.blockchain_verified && (
-                          <span className="font-mono" style={{
-                            fontSize: 10,
-                            background: 'rgba(16, 185, 129, 0.1)',
-                            color: 'var(--accent-success)',
-                            padding: '4px 10px',
-                            borderRadius: 9999,
-                            fontWeight: 800,
-                            letterSpacing: '1px'
-                          }}>● ON-CHAIN</span>
-                        )}
-                      </div>
-                      <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: '90%' }}>
-                        {contract.description?.length > 140 ? contract.description.slice(0, 140) + '...' : (contract.description || 'No description provided')}
-                      </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {displayedContracts.map(contract => (
+              <div
+                key={contract.id}
+                className="glass-card"
+                style={{ padding: '24px 32px', cursor: 'pointer', borderRadius: '24px' }}
+                onClick={() => router.push(`/contracts/${contract.id}`)}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10 }}>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em' }}>{contract.title}</h3>
+                      <StateBadge state={contract.state} />
+                      {contract.blockchain_verified && (
+                        <span className="mono-tech" style={{
+                          fontSize: 10,
+                          background: 'rgba(131, 110, 249, 0.1)',
+                          color: 'var(--accent-primary)',
+                          padding: '3px 10px',
+                          borderRadius: '9999px',
+                          fontWeight: 700,
+                          border: '1px solid rgba(131, 110, 249, 0.2)'
+                        }}>⛓ ON-CHAIN</span>
+                      )}
                     </div>
-                    <div style={{ textAlign: 'right', paddingLeft: 24 }}>
-                      <p className="font-mono gradient-text" style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-1px' }}>
-                        {parseFloat(contract.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
-                        <span style={{ fontSize: 14, marginLeft: 4, opacity: 0.8 }}>MON</span>
-                      </p>
-                      <p className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        {new Date(contract.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                      </p>
-                    </div>
+                    <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: '1.5', maxWidth: '80%' }}>
+                      {contract.description?.slice(0, 120) || 'No description provided for this ecosystem agreement.'}
+                      {contract.description?.length > 120 ? '...' : ''}
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p className="mono-tech" style={{ fontSize: 24, fontWeight: 800, color: 'var(--accent-primary)' }}>
+                      <span style={{ fontSize: 14, opacity: 0.6, marginRight: 4 }}>MON</span>
+                      {parseFloat(contract.total_amount).toFixed(2)}
+                    </p>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8, fontWeight: 500 }}>
+                      Created {new Date(contract.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
-      </motion.main>
+      </main>
     </div>
   );
 }
