@@ -65,7 +65,9 @@ export default function Navbar() {
           </Link>
           {user && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span className="mono-tech" style={{ color: 'var(--text-muted)', fontSize: 13, background: 'rgba(255,255,255,0.03)', padding: '4px 12px', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>{user.phone_number}</span>
+              <span className="mono-tech" style={{ color: 'var(--text-muted)', fontSize: 13, background: 'rgba(255,255,255,0.03)', padding: '4px 12px', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>
+                {user.full_name || user.email || user.phone_number}
+              </span>
               <button onClick={logout} style={{
                 background: 'rgba(239, 68, 68, 0.1)',
                 color: '#ef4444',

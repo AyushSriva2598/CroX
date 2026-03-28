@@ -13,9 +13,11 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from django.conf import settings
 import time
+import os
 
 from .models import User, OTPToken, AuthToken
 from .serializers import SendOTPSerializer, VerifyOTPSerializer, UserSerializer
+from .services import send_sms_otp
 
 
 @api_view(['POST'])
@@ -38,28 +40,14 @@ def send_otp(request):
         expires_at=timezone.now() + timedelta(minutes=10)
     )
 
-    # In dev: OTP is printed to console via email backend
-    # In production: send via SMS
-    print(f"\n{'='*50}")
-    print(f"  OTP for {phone}: {otp_code}")
-    print(f"{'='*50}\n")
-
-    try:
-        send_mail(
-            subject='Your TrustLayer OTP',
-            message=f'Your OTP is: {otp_code}. Valid for 10 minutes.',
-            from_email='noreply@trustlayer.dev',
-            recipient_list=[f'{phone}@trustlayer.dev'],  # placeholder
-            fail_silently=True,
-        )
-    except Exception:
-        pass  # Console backend will still print
+    # Send via new service (Twilio-pluggable)
+    send_sms_otp(phone, otp_code)
 
     return Response({
         'message': 'OTP sent successfully',
         'phone_number': phone,
-        # Include OTP in dev mode for easy testing
-        'otp_code_dev_only': otp_code,
+        # Include OTP in dev mode for easy testing if no Twilio
+        'otp_code_dev_only': otp_code if not os.getenv('TWILIO_ACCOUNT_SID') else None,
     }, status=status.HTTP_200_OK)
 
 
@@ -167,8 +155,9 @@ def google_login(request):
         if not email:
             return Response({'error': 'No email in Google token'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Generate a dummy phone number since the DB requires a unique phone_number (max 15 chars)
-        dummy_phone = f"+G{str(int(time.time()*100))}"[:15]
+        # Use the first part of the email + Google suffix to avoid "77469" timestamp collisions
+        email_prefix = email.split('@')[0][:10]
+        dummy_phone = f"G-{email_prefix}"[:15]
         
         # Get or create user
         user, created = User.objects.get_or_create(

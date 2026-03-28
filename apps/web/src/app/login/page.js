@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [devOtp, setDevOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [authMode, setAuthMode] = useState('both'); // 'both' | 'google-only'
   const router = useRouter();
 
   const handleDemoLogin = async (role) => {
@@ -140,45 +141,14 @@ export default function LoginPage() {
           </div>
         )}
 
-        {step === 'phone' ? (
-          <form onSubmit={handleSendOTP}>
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', marginBottom: 8, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
-                Full Name
-              </label>
-              <input
-                className="input-field"
-                type="text"
-                placeholder="PROVENANCE STEWARD"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{ width: '100%' }}
-              />
-            </div>
-            <div style={{ marginBottom: 32 }}>
-              <label style={{ display: 'block', marginBottom: 8, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
-                Operational Identity (Phone)
-              </label>
-              <input
-                className="input-field"
-                type="tel"
-                placeholder="+1 888 555 1212"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                style={{ width: '100%' }}
-              />
-            </div>
-            <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', padding: '16px', fontSize: 16 }}>
-              {loading ? 'INITIALIZING...' : 'GENERATE ACCESS CODE'}
-            </button>
-            
-            <div style={{ marginTop: 36, padding: '32px 0 0', borderTop: '1px solid var(--border-color)' }}>
-              <p style={{ textAlign: 'center', fontSize: 14, color: 'var(--text-muted)', marginBottom: 20, fontWeight: 500 }}>
-                Strategic Authentication
+
+        <div style={{ position: 'relative' }}>
+          {authMode === 'google-only' ? (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 14 }}>
+                Secure gateway restricted to Strategic Identity (Google OAuth)
               </p>
-              
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <GoogleLogin
                   onSuccess={handleRealGoogleLogin}
                   onError={() => setError('Authentication Failed')}
@@ -187,75 +157,154 @@ export default function LoginPage() {
                   shape="pill"
                 />
               </div>
-
-              <div style={{ padding: '24px 0 0', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
-                <p className="mono-tech" style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 16, textTransform: 'uppercase', fontWeight: 700 }}>Bypass Protocol (Demo)</p>
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <button 
-                    type="button" 
-                    className="btn-secondary" 
-                    onClick={() => handleDemoLogin('admin')}
-                    style={{ flex: 1, fontSize: 12, padding: '10px 0', borderRadius: '9999px', border: '1px solid rgba(131, 110, 249, 0.2)', color: 'var(--accent-primary)' }}
-                    disabled={loading}
-                  >
-                    SYNC ADMIN
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn-secondary" 
-                    onClick={() => handleDemoLogin('worker')}
-                    style={{ flex: 1, fontSize: 12, padding: '10px 0', borderRadius: '9999px', border: '1px solid rgba(168, 85, 247, 0.2)', color: 'var(--accent-secondary)' }}
-                    disabled={loading}
-                  >
-                    SYNC WORKER
-                  </button>
-                </div>
-              </div>
             </div>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOTP}>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
-              OTP sent to <strong style={{ color: 'var(--text-primary)' }}>{phone}</strong>
-            </p>
-            {devOtp && (
-              <div style={{
-                background: 'rgba(0, 212, 170, 0.1)',
-                border: '1px solid rgba(0, 212, 170, 0.2)',
-                borderRadius: 10,
-                padding: '10px 14px',
-                marginBottom: 16,
-                fontSize: 13,
-                color: 'var(--accent-secondary)',
-              }}>
-                🔑 Dev OTP: <strong>{devOtp}</strong>
-              </div>
+          ) : (
+            <>
+              {step === 'phone' ? (
+                <form onSubmit={handleSendOTP}>
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
+                      Operational Identity (Name)
+                    </label>
+                    <input
+                      className="input-field"
+                      type="text"
+                      placeholder="ENTER FULL NAME"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                  <div style={{ marginBottom: 32 }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
+                      Settlement Contact (Phone)
+                    </label>
+                    <input
+                      className="input-field"
+                      type="tel"
+                      placeholder="+1 (555) 000-0000"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                  <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', padding: '16px', fontSize: 15, fontWeight: 800 }}>
+                    {loading ? 'INITIALIZING...' : 'GENERATE ACCESS CODE'}
+                  </button>
+                  
+                  <div style={{ marginTop: 36, padding: '32px 0 0', borderTop: '1px solid var(--border-color)' }}>
+                    <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', marginBottom: 20, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Strategic SSO
+                    </p>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+                      <GoogleLogin
+                        onSuccess={handleRealGoogleLogin}
+                        onError={() => setError('Authentication Failed')}
+                        disabled={loading}
+                        theme="filled_black"
+                        shape="pill"
+                      />
+                    </div>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOTP}>
+                  <div style={{ textAlign: 'center', marginBottom: 32 }}>
+                    <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
+                      Validating mandate for <strong style={{ color: 'var(--accent-primary)' }}>{phone}</strong>
+                    </p>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Check your device for the 6-digit access protocol.</p>
+                  </div>
+                  
+                  {devOtp && (
+                    <div style={{
+                      background: 'rgba(131, 110, 249, 0.05)',
+                      border: '1px solid rgba(131, 110, 249, 0.2)',
+                      borderRadius: '16px',
+                      padding: '16px',
+                      marginBottom: 24,
+                      textAlign: 'center'
+                    }}>
+                      <p style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, marginBottom: 8, letterSpacing: '0.05em' }}>Injected Auth Token (Dev)</p>
+                      <strong className="mono-tech" style={{ fontSize: 24, letterSpacing: 4, color: 'var(--accent-primary)' }}>{devOtp}</strong>
+                    </div>
+                  )}
+
+                  <div style={{ marginBottom: 32 }}>
+                    <label style={{ display: 'block', marginBottom: 12, fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', textAlign: 'center' }}>
+                      Enter Verification Code
+                    </label>
+                    <input
+                      className="input-field mono-tech"
+                      type="text"
+                      placeholder="000000"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      required
+                      maxLength={6}
+                      style={{ width: '100%', fontSize: 32, textAlign: 'center', letterSpacing: 12, padding: '20px 0', color: 'var(--accent-secondary)' }}
+                    />
+                  </div>
+                  <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', padding: '16px', fontSize: 16, fontWeight: 800 }}>
+                    {loading ? 'VERIFYING PROTOCOL...' : 'AUTHORIZE ACCESS'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setStep('phone')}
+                    style={{ width: '100%', marginTop: 16, fontSize: 13, fontWeight: 700, border: 'none', background: 'transparent', color: 'var(--text-muted)' }}
+                  >
+                    ← RE-ENTER IDENTITY
+                  </button>
+                </form>
+              )}
+            </>
+          )}
+
+          {/* Demo Bypass always visible but subtle */}
+          <div style={{ marginTop: 24, padding: '24px 0 0', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+            <p className="mono-tech" style={{ textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.2)', marginBottom: 16, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.1em' }}>Development Bypass Protocol</p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                onClick={() => handleDemoLogin('admin')}
+                style={{ flex: 1, fontSize: 11, padding: '10px 0', borderRadius: '9999px', border: '1px solid rgba(131, 110, 249, 0.1)', color: 'rgba(131, 110, 249, 0.6)', fontWeight: 800 }}
+                disabled={loading}
+              >
+                SYNC ADMIN
+              </button>
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                onClick={() => handleDemoLogin('worker')}
+                style={{ flex: 1, fontSize: 11, padding: '10px 0', borderRadius: '9999px', border: '1px solid rgba(168, 85, 247, 0.1)', color: 'rgba(168, 85, 247, 0.6)', fontWeight: 800 }}
+                disabled={loading}
+              >
+                SYNC WORKER
+              </button>
+            </div>
+            {authMode === 'both' ? (
+              <button 
+                onClick={() => setAuthMode('google-only')}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 10, display: 'block', margin: '16px auto 0', cursor: 'pointer', fontWeight: 700 }}
+              >
+                SWITCH TO GOOGLE-ONLY MODE
+              </button>
+            ) : (
+              <button 
+                onClick={() => setAuthMode('both')}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 10, display: 'block', margin: '16px auto 0', cursor: 'pointer', fontWeight: 700 }}
+              >
+                RESTORE MULTI-MODE AUTH
+              </button>
             )}
-            <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: 'var(--text-secondary)' }}>
-              Enter OTP
-            </label>
-            <input
-              className="input-field"
-              type="text"
-              placeholder="123456"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-              maxLength={6}
-              style={{ marginBottom: 24, fontSize: 24, textAlign: 'center', letterSpacing: 8 }}
-            />
-            <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%' }}>
-              {loading ? 'Verifying...' : 'Verify & Login'}
-            </button>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => setStep('phone')}
-              style={{ width: '100%', marginTop: 12 }}
-            >Back</button>
-          </form>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
